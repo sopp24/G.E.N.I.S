@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="fr" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#050607">
+  <meta name="description" content="GENIS — assistant personnel intelligent et orchestrateur d'outils.">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="GENIS">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="192x192" href="genis-192.png">
+  <link rel="apple-touch-icon" href="genis-192.png">
+  <link rel="stylesheet" href="styles.css">
+  <title>GENIS</title>
+</head>
+<body>
+  <div id="app" class="app-shell">
+    <header class="topbar" aria-label="Barre supérieure">
+      <button id="brandButton" class="brand" type="button" title="Accueil">
+        <span class="brand-mark" aria-hidden="true">G</span>
+        <span class="brand-copy"><strong>GENIS</strong><small>assistant personnel</small></span>
+      </button>
+      <div class="system-status">
+        <span id="statusDot" class="status-dot"></span>
+        <span id="statusText">Prête</span>
+        <time id="clock">--:--</time>
+      </div>
+    </header>
+
+    <main class="workspace" id="mainWorkspace">
+      <section class="hero" aria-label="Interface vocale GENIS">
+        <div class="hero-state" aria-live="polite">
+          <span id="stateKicker">VEILLE</span>
+          <span id="stateDetail">Je suis prête.</span>
+        </div>
+        <div class="orb-wrap">
+          <canvas id="waveCanvas" class="wave-canvas" aria-label="Animation centrale de GENIS"></canvas>
+          <button id="micButton" class="mic-button" type="button" aria-pressed="false" aria-label="Activer le microphone">
+            <span class="mic-icon">⌕</span>
+            <span class="mic-label">Parler</span>
+          </button>
+        </div>
+        <div id="actionRail" class="action-rail" aria-live="polite"></div>
+      </section>
+
+      <section id="conversationPanel" class="panel conversation-panel" aria-label="Conversation">
+        <div class="panel-head">
+          <div><span class="panel-eyebrow">CONVERSATION</span><h1>Je demande. GENIS s’en occupe.</h1></div>
+          <button class="icon-button" data-action="new-chat" title="Nouvelle conversation">＋</button>
+        </div>
+        <div id="messages" class="messages"></div>
+      </section>
+    </main>
+
+    <section id="composer" class="composer" aria-label="Saisie de demande">
+      <form id="promptForm" class="prompt-form">
+        <button id="attachButton" class="round-control" type="button" title="Choisir un fichier" aria-label="Choisir un fichier">＋</button>
+        <input id="fileInput" type="file" multiple hidden>
+        <textarea id="promptInput" rows="1" autocomplete="off" placeholder="Que dois-je faire pour vous ?"></textarea>
+        <button id="sendButton" class="send-button" type="submit" title="Envoyer" aria-label="Envoyer">↗</button>
+      </form>
+      <div class="composer-hint"><span>Entrée pour envoyer · Shift+Entrée pour une nouvelle ligne</span><span id="micHint">Micro désactivé</span></div>
+    </section>
+
+    <nav id="dock" class="dock" aria-label="Dock GENIS">
+      <button class="dock-item active" data-panel="home" title="Accueil"><span>◉</span><small>Accueil</small></button>
+      <button class="dock-item" data-panel="history" title="Conversations"><span>☰</span><small>Chats</small></button>
+      <button class="dock-item" data-panel="apps" title="Applications"><span>⊞</span><small>Apps</small></button>
+      <button class="dock-item" data-panel="memory" title="Mémoire"><span>◇</span><small>Mémoire</small></button>
+      <button class="dock-item" data-panel="tasks" title="Tâches"><span>◷</span><small>Tâches</small></button>
+      <button class="dock-item" data-panel="notifications" title="Notifications"><span>•</span><small>Alerte</small></button>
+      <button class="dock-item" data-panel="settings" title="Réglages"><span>⚙</span><small>Réglages</small></button>
+    </nav>
+
+    <div id="drawer" class="drawer" aria-hidden="true">
+      <div class="drawer-scrim" data-close-drawer></div>
+      <aside class="drawer-panel" role="dialog" aria-modal="true" aria-labelledby="drawerTitle">
+        <div class="drawer-head"><div><span class="panel-eyebrow">GENIS OS</span><h2 id="drawerTitle">Réglages</h2></div><div><button class="secondary-btn" data-close-drawer type="button" title="Fermer les réglages">Fermer</button><button class="icon-button" data-close-drawer type="button" title="Fermer les réglages" aria-label="Fermer les réglages">×</button></div></div>
+        <div id="drawerContent" class="drawer-content"></div>
+      </aside>
+    </div>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

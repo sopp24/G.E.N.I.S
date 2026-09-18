@@ -1,0 +1,14 @@
+{
+  "name": "GENIS — assistant personnel",
+  "short_name": "GENIS",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#050607",
+  "theme_color": "#050607",
+  "description": "Assistant personnel intelligent et orchestrateur d'outils.",
+  "icons": [
+    {"src":"genis-192.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},
+    {"src":"genis-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}
+  ]
+}
