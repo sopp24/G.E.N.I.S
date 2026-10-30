@@ -45,5 +45,5 @@ export function openService(name){
 export function webSearch(q){const url=`https://www.google.com/search?q=${encodeURIComponent(q)}`;window.open(url,'_blank','noopener');return url;}
 export function notify(title,body){
  const entry={id:uid('notif'),title,body,createdAt:Date.now(),read:false};storage.notifications=[entry,...storage.notifications].slice(0,100);
- if('Notification' in window && Notification.permission==='granted') new Notification(title,{body}); return entry;
+ if(storage.permissions.notifications&&'Notification' in window&&Notification.permission==='granted')new Notification(title,{body});return entry;
 }
