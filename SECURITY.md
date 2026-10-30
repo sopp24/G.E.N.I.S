@@ -17,7 +17,7 @@ GENIS sépare l'intention de l'exécution. Une réponse textuelle ne constitue j
 
 - Ne jamais committer une clé API.
 - Les secrets fournisseurs vont dans les secrets du fournisseur d'hébergement backend.
-- Pour Cloudflare Worker : `ANTHROPIC_API_KEY` et `APP_SECRET` sont des Secrets obligatoires.
+- Pour Cloudflare Worker : `APP_SECRET` et la clé du fournisseur sélectionné (`ANTHROPIC_API_KEY` ou `OPENAI_API_KEY`) sont des Secrets obligatoires. `AI_PROVIDER` indique `anthropic` ou `openai`.
 - `ALLOWED_ORIGIN` doit contenir une ou plusieurs origines exactes autorisées (sans chemin). Le Worker refuse les origines absentes ou non autorisées et n'accepte jamais `*`.
 - Le secret partagé saisi dans GENIS reste stocké dans le `localStorage` de ce navigateur : il n'est pas un coffre-fort et ne doit pas être partagé. L'export JSON l'exclut volontairement.
 - Ne jamais demander à un modèle de langage de transmettre ou d'afficher un token.
