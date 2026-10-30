@@ -9,7 +9,7 @@ function remove(key) { localStorage.removeItem(PREFIX + key); }
 
 export const storage = {
   read, write, remove,
-  get settings(){ return read('settings', {theme:'dark', voiceEnabled:true, micEnabled:false, speechRate:1, volume:1, gatewayUrl:'', gatewaySecret:'', model:'claude-haiku-4-5-20251001', defaultCity:''}); },
+  get settings(){ return read('settings', {theme:'dark', voiceEnabled:true, micEnabled:false, speechRate:1, volume:1, gatewayUrl:'', gatewaySecret:'', provider:'anthropic', model:'claude-haiku-4-5-20251001', defaultCity:''}); },
   set settings(v){ write('settings', v); },
   get chats(){ return read('chats', []); }, set chats(v){ write('chats', v); },
   get activeChat(){ return read('activeChat', null); }, set activeChat(v){ write('activeChat', v); },
