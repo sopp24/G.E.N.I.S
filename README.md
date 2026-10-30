@@ -81,7 +81,11 @@ La PWA, le microphone et la synthèse vocale doivent être testés dans un conte
 
 La page GitHub est publique dès qu'elle est publiée ; ne placez donc aucun secret, mot de passe ou fichier privé dans le dépôt.
 
-## Passerelle IA sécurisée
+## Passerelle IA
+
+GENIS peut mener une conversation généraliste (questions ouvertes, explications, rédaction, traduction, résumé, programmation et raisonnement) dès qu'une passerelle est configurée. Le navigateur ne contient aucune clé fournisseur. Le Worker accepte `AI_PROVIDER=anthropic` ou `openai`, `APP_SECRET`, `ALLOWED_ORIGIN`, et la clé correspondante (`ANTHROPIC_API_KEY` ou `OPENAI_API_KEY`). Anthropic utilise par défaut `claude-haiku-4-5-20251001` ; OpenAI utilise `gpt-4.1-mini`. Dans GENIS → Réglages → Connexion IA, sélectionner le même fournisseur que celui configuré dans le Worker, renseigner l'URL publique du Worker et le secret partagé. Une clé API valide et un compte fournisseur approvisionné restent indispensables ; GitHub Pages ne peut pas fournir de modèle IA gratuitement ou à lui seul.
+
+ sécurisée
 
 Le navigateur ne reçoit jamais la clé Anthropic. Le fichier `worker.js` est destiné à Cloudflare Workers.
 
