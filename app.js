@@ -126,31 +126,31 @@ function bindDrawer(){
  $$('[data-open-connector]').forEach(b=>b.onclick=()=>{const c=CONNECTORS.find(x=>x.id===b.dataset.openConnector);if(c.url&&c.url.includes('http')){const tab=window.open(c.url,'_blank');if(tab){try{tab.opener=null;}catch{}}else toast('Le navigateur a bloqué cette ouverture.');}else toast('Connecteur préparé — identifiants/configuration nécessaires.');});
  $$('[data-cancel-task]').forEach(b=>b.onclick=()=>{storage.tasks=storage.tasks.map(t=>t.id===b.dataset.cancelTask?{...t,status:'cancelled'}:t);renderDrawer('tasks');});
  $$('[data-add-auto]').forEach(b=>b.onclick=()=>{const trigger=$('#autoTrigger')?.value.trim();const kind=$('#autoKind')?.value;const value=$('#autoValue')?.value.trim();if(!trigger||!value){toast('Indiquez une phrase et une action.');return;}storage.automations=[{id:uid('auto'),trigger,enabled:true,createdAt:Date.now(),actions:[{kind,value}]} ,...storage.automations];renderDrawer('tasks');toast('Automatisation créée');});
- $('[data-edit-auto-trigger]').forEach(b=>b.onclick=()=>{
+ $$('[data-edit-auto-trigger]').forEach(b=>b.onclick=()=>{
   const item=storage.automations.find(x=>x.id===b.dataset.editAutoTrigger);if(!item)return;
   const trigger=prompt('Modifier la phrase déclencheuse :',item.trigger);if(trigger===null)return;
   if(!trigger.trim()){toast('La phrase déclencheuse ne peut pas être vide.');return;}
   storage.automations=storage.automations.map(x=>x.id===item.id?{...x,trigger:trigger.trim()}:x);renderDrawer('tasks');toast('Déclencheur modifié');
  });
- $('[data-add-auto-action]').forEach(b=>b.onclick=()=>{
+ $$('[data-add-auto-action]').forEach(b=>b.onclick=()=>{
   const item=storage.automations.find(x=>x.id===b.dataset.addAutoAction);if(!item)return;
   const kind=prompt('Type : say (répondre), open (ouvrir un service) ou timer (minuteur).','open');if(kind===null)return;
   const normalized=kind.trim().toLowerCase();if(!['say','open','timer'].includes(normalized)){toast('Type non pris en charge.');return;}
   const value=prompt(normalized==='timer'?'Durée du minuteur en minutes :':'Contenu de l’action :','');if(value===null||!value.trim())return;
   storage.automations=storage.automations.map(x=>x.id===item.id?{...x,actions:[...(x.actions||[]),{kind:normalized,value:value.trim()}]}:x);renderDrawer('tasks');toast('Action ajoutée');
  });
- $('[data-edit-auto-action]').forEach(b=>b.onclick=()=>{
+ $$('[data-edit-auto-action]').forEach(b=>b.onclick=()=>{
   const item=storage.automations.find(x=>x.id===b.dataset.editAutoAction);const index=Number(b.dataset.actionIndex);const action=item?.actions?.[index];if(!action)return;
   const kind=prompt('Type : say, open ou timer.',action.kind);if(kind===null)return;
   const normalized=kind.trim().toLowerCase();if(!['say','open','timer'].includes(normalized)){toast('Type non pris en charge.');return;}
   const value=prompt('Valeur de l’action :',String(action.value||''));if(value===null||!value.trim())return;
   storage.automations=storage.automations.map(x=>x.id===item.id?{...x,actions:x.actions.map((entry,i)=>i===index?{kind:normalized,value:value.trim()}:entry)}:x);renderDrawer('tasks');toast('Action modifiée');
  });
- $('[data-remove-auto-action]').forEach(b=>b.onclick=()=>{
+ $$('[data-remove-auto-action]').forEach(b=>b.onclick=()=>{
   const item=storage.automations.find(x=>x.id===b.dataset.removeAutoAction);const index=Number(b.dataset.actionIndex);if(!item)return;
   storage.automations=storage.automations.map(x=>x.id===item.id?{...x,actions:(x.actions||[]).filter((_,i)=>i!==index)}:x);renderDrawer('tasks');toast('Action retirée');
  });
- $('[data-toggle-auto]').forEach(b=>b.onclick=()=>{storage.automations=storage.automations.map(a=>a.id===b.dataset.toggleAuto?{...a,enabled:!a.enabled}:a);renderDrawer('tasks');});
+ $$('[data-toggle-auto]').forEach(b=>b.onclick=()=>{storage.automations=storage.automations.map(a=>a.id===b.dataset.toggleAuto?{...a,enabled:!a.enabled}:a);renderDrawer('tasks');});
  $$('[data-delete-auto]').forEach(b=>b.onclick=()=>{storage.automations=storage.automations.filter(a=>a.id!==b.dataset.deleteAuto);renderDrawer('tasks');});
  $$('[data-request-notifications]').forEach(b=>b.onclick=async()=>{if('Notification' in window){const p=await Notification.requestPermission();const permissions=storage.permissions;permissions.notifications=p==='granted';storage.permissions=permissions;toast(`Notifications : ${p}`);renderDrawer('notifications');}else toast('Les notifications ne sont pas disponibles dans ce navigateur.');});
  $$('[data-toggle-setting]').forEach(b=>b.onclick=()=>{settings[b.dataset.toggleSetting]=!settings[b.dataset.toggleSetting];storage.settings=settings;renderDrawer('settings');});

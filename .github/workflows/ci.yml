@@ -43,7 +43,7 @@ jobs:
           const workerSource = fs.readFileSync('worker.js', 'utf8');
           const css = fs.readFileSync('styles.css', 'utf8');
           const sw = fs.readFileSync('sw.js', 'utf8');
-          const brokenSelectors = app.match(/(?<!\$)\$\([^)]*\)\.forEach/g) || [];
+          const brokenSelectors = app.match(/(?<!\$)\$\([^)]*\)\??\.forEach/g) || [];
           assert.equal(brokenSelectors.length, 0, 'Do not call forEach() on querySelector() results');
           for (const id of ['app','messages','promptForm','promptInput','micButton','drawer','drawerContent','fileInput','attachButton','dock']) {
             assert.ok(html.includes('id="' + id + '"'), 'Missing HTML element #' + id);
