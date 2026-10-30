@@ -1,6 +1,6 @@
 export const CONNECTORS=[
- {id:'sopp-language',name:'SOPP Language',kind:'Écosystème SOPP',status:'prepared',level:'open',url:'https://example.com/sopp-language',note:'Définir l’URL publique ou un endpoint de traduction avant activation.'},
- {id:'pharma-sopp',name:'Pharma SOPP',kind:'Écosystème SOPP',status:'prepared',level:'read',url:'https://example.com/pharma-sopp',note:'Prévoir une API ou une URL officielle du service.'},
+ {id:'sopp-language',name:'SOPP Language',kind:'Écosystème SOPP',status:'prepared',level:'open',note:'Définir l’URL publique ou un endpoint de traduction avant activation.'},
+ {id:'pharma-sopp',name:'Pharma SOPP',kind:'Écosystème SOPP',status:'prepared',level:'read',note:'Prévoir une API ou une URL officielle du service.'},
  {id:'open-meteo',name:'Open-Meteo',kind:'Météo',status:'ready',level:'read',url:'https://open-meteo.com/',note:'Fonctionne sans clé API pour le prototype météo.'},
  {id:'google-calendar',name:'Google Agenda',kind:'Productivité',status:'prepared',level:'write',note:'OAuth Google à configurer côté backend.'},
  {id:'google-maps',name:'Google Maps',kind:'Navigation',status:'prepared',level:'read',note:'API Maps / Routes selon la fonctionnalité.'},
