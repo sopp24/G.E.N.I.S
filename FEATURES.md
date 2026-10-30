@@ -16,7 +16,8 @@
 | Notifications | ✅ | API Notification selon navigateur et permission accordée |
 | Automatisations | ✅ prototype | phrase déclencheuse + action locale (réponse, ouverture d’un service connu ou minuteur) |
 | Permissions | ✅ | centre de réglages local |
-| Passerelle IA | ✅ préparée | Cloudflare Worker, origine exacte autorisée et secrets côté serveur obligatoires |
+| Chat IA généraliste | ✅ code prêt | Questions libres, rédaction, traduction, programmation, raisonnement et historique ; nécessite une passerelle et une clé fournisseur |
+| Fournisseurs IA | ✅ code prêt | Cloudflare Worker compatible Anthropic et OpenAI, streaming et contexte de conversation |
 | Fichiers texte | ✅ prototype | TXT, Markdown, CSV, JSON, HTML, XML et LOG (permission Fichiers requise, 2 Mo max par fichier ; pas d’extraction PDF/Office) |
 | Google Agenda | 🧩 | connecteur préparé, OAuth à ajouter |
 | Gmail / Outlook | 🧩 | connecteurs préparés |
