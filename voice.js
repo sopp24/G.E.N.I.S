@@ -5,7 +5,7 @@ export class VoiceEngine {
     const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
     if(SR){
       this.recognition=new SR();
-      this.recognition.lang='fr-FR'; this.recognition.interimResults=true; this.recognition.continuous=false;
+      this.recognition.lang='fr-FR'; this.recognition.interimResults=true; this.recognition.continuous=true;
       this.recognition.onstart=()=>{this.listening=true;this.onState('listening')};
       this.recognition.onend=()=>{this.listening=false;this.onState('idle')};
       this.recognition.onerror=(e)=>{this.listening=false;this.onState('error',e.error||'microphone')};
