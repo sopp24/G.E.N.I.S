@@ -17,7 +17,7 @@
 | Automatisations | ✅ prototype | phrase déclencheuse + action locale (réponse, ouverture d’un service connu ou minuteur) |
 | Permissions | ✅ | centre de réglages local |
 | Passerelle IA | ✅ préparée | Cloudflare Worker, origine exacte autorisée et secrets côté serveur obligatoires |
-| Fichiers texte | ✅ prototype | TXT, Markdown, CSV, JSON, HTML, XML et LOG (2 Mo max par fichier ; pas d’extraction PDF/Office) |
+| Fichiers texte | ✅ prototype | TXT, Markdown, CSV, JSON, HTML, XML et LOG (permission Fichiers requise, 2 Mo max par fichier ; pas d’extraction PDF/Office) |
 | Google Agenda | 🧩 | connecteur préparé, OAuth à ajouter |
 | Gmail / Outlook | 🧩 | connecteurs préparés |
 | Deezer | 🧩 | contrôle réel dépendant des APIs/permissions |
