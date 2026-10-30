@@ -171,5 +171,5 @@ async function readLimitedBody(request,maxBytes){
 }
 function constantTimeEqual(a,b){if(a.length!==b.length)return false;let diff=0;for(let i=0;i<a.length;i++)diff|=a.charCodeAt(i)^b.charCodeAt(i);return diff===0;}
 function safeError(e){return String(e?.message||'Erreur inconnue').slice(0,500);}
-function corsHeaders(origin){const h=new Headers();h.set('Access-Control-Allow-Origin',origin);h.set('Access-Control-Allow-Methods','POST, OPTIONS');h.set('Access-Control-Allow-Headers','content-type, x-app-secret');h.set('Access-Control-Max-Age','86400');h.set('Vary','Origin');return h;}
+function corsHeaders(origin){const h=new Headers();h.set('Access-Control-Allow-Origin',origin);h.set('Access-Control-Allow-Methods','GET, POST, OPTIONS');h.set('Access-Control-Allow-Headers','content-type, x-app-secret');h.set('Access-Control-Max-Age','86400');h.set('Vary','Origin');return h;}
 function json(obj,status,cors){const h=new Headers(cors||{});h.set('content-type','application/json; charset=utf-8');h.set('cache-control','no-store');h.set('x-content-type-options','nosniff');return new Response(JSON.stringify(obj),{status,headers:h});}
