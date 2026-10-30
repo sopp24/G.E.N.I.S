@@ -1,0 +1,19 @@
+# Local development
+node_modules/
+.DS_Store
+Thumbs.db
+*.log
+
+# Local environment and credentials
+.env
+.env.*
+!.env.example
+
+# Cloudflare / Wrangler local state
+.wrangler/
+.dev.vars
+
+# Test and build output
+coverage/
+dist/
+build/

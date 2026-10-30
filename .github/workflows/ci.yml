@@ -10,14 +10,20 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: genis-quality-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   validate:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
-          node-version: 22
+          node-version: 24
+          package-manager-cache: false
       - name: JavaScript syntax
         run: npm test
       - name: PWA manifest
@@ -27,3 +33,106 @@ jobs:
           for f in index.html styles.css app.js brain.js storage.js voice.js waveform.js tools.js index.js manifest.webmanifest sw.js genis-192.png genis-512.png; do
             test -s "$f" || { echo "Missing or empty asset: $f"; exit 1; }
           done
+      - name: Application runtime guards
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import assert from 'node:assert/strict';
+          const app = fs.readFileSync('app.js', 'utf8');
+          const html = fs.readFileSync('index.html', 'utf8');
+          const workerSource = fs.readFileSync('worker.js', 'utf8');
+          const css = fs.readFileSync('styles.css', 'utf8');
+          const sw = fs.readFileSync('sw.js', 'utf8');
+          const brokenSelectors = app.match(/(?<!\$)\$\([^)]*\)\.forEach/g) || [];
+          assert.equal(brokenSelectors.length, 0, 'Do not call forEach() on querySelector() results');
+          for (const id of ['app','messages','promptForm','promptInput','micButton','drawer','drawerContent','fileInput','attachButton','dock']) {
+            assert.ok(html.includes('id="' + id + '"'), 'Missing HTML element #' + id);
+          }
+          for (const moduleName of ['storage.js','voice.js','waveform.js','brain.js','tools.js','index.js']) {
+            assert.ok(fs.existsSync(moduleName), 'Missing imported module: ' + moduleName);
+          }
+          assert.ok(html.includes('title="Fermer les réglages"'), 'Settings close control is missing');
+          assert.ok(app.includes('function refreshVoiceSelector'), 'Voice selector is missing');
+          assert.ok(app.includes('voiceName:settings.voiceName'), 'Selected voice is not connected to speech output');
+          assert.ok(app.includes('function buildAttachmentContext'), 'Attachment context size guard is missing');
+          assert.ok(app.includes('activeChat.id'), 'Current chat id is not passed to history recall');
+          assert.ok(css.includes('grid-area:1 / 1'), 'Responsive conversation overlay must stay inside the workspace grid');
+          assert.ok(workerSource.includes('readLimitedBody') && workerSource.includes('MAX_REQUEST_BYTES'), 'Gateway request size guard is missing');
+          assert.ok(sw.includes("const CACHE='genis-v8';"), 'Service worker cache must be bumped when the app shell changes');
+          console.log('GENIS runtime guards passed.');
+          NODE
+      - name: Gateway integration tests (Anthropic + OpenAI)
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import workerModule from './worker.js';
+
+          const worker = workerModule;
+          const env = {
+            APP_SECRET: 'ci-only-secret',
+            ALLOWED_ORIGIN: 'https://sopp24.github.io',
+            ANTHROPIC_API_KEY: 'ci-anthropic-key',
+            OPENAI_API_KEY: 'ci-openai-key'
+          };
+          const origin = 'https://sopp24.github.io';
+          const post = (body, secret='ci-only-secret', requestOrigin=origin) => new Request('https://genis-worker.test/', {
+            method: 'POST',
+            headers: {'content-type':'application/json','origin':requestOrigin,'x-app-secret':secret},
+            body: JSON.stringify(body)
+          });
+
+          const unauthorized = await worker.fetch(post({messages:[{role:'user',content:'test'}]},'wrong-secret'),env);
+          assert.equal(unauthorized.status,403,'Worker must reject a wrong APP_SECRET');
+          const forbiddenOrigin = await worker.fetch(post({messages:[{role:'user',content:'test'}]},'ci-only-secret','https://untrusted.example'),env);
+          assert.equal(forbiddenOrigin.status,403,'Worker must reject unlisted origins');
+
+          const oversizedBody = JSON.stringify({messages:[{role:'user',content:'x'.repeat(270000)}]});
+          const oversizedRequest = new Request('https://genis-worker.test/', {
+            method:'POST',
+            headers:{'content-type':'application/json','origin':origin,'x-app-secret':'ci-only-secret'},
+            body:oversizedBody
+          });
+          const oversized = await worker.fetch(oversizedRequest,env);
+          assert.equal(oversized.status,413,'Worker must reject oversized request bodies');
+
+          let anthropicCalls=0;
+          globalThis.fetch = async (url,init={}) => {
+            assert.ok(String(url).includes('api.anthropic.com'));
+            const payload=JSON.parse(init.body);
+            anthropicCalls++;
+            if(anthropicCalls===1){
+              return new Response(JSON.stringify({content:[{type:'tool_use',id:'ci-calc-1',name:'calculate',input:{expression:'-2^2'}}]}),{status:200,headers:{'content-type':'application/json'}});
+            }
+            const last=payload.messages.at(-1);
+            const calculation=JSON.parse(last.content[0].content);
+            assert.equal(calculation.result,-4,'Calculator must respect unary/exponent precedence');
+            return new Response(JSON.stringify({content:[{type:'text',text:'Résultat : -4'}]}),{status:200,headers:{'content-type':'application/json'}});
+          };
+          const anthropicResponse=await worker.fetch(post({provider:'anthropic',model:'ci-model',system:'test',max_tokens:512,messages:[{role:'user',content:'Calcule -2^2'}]}),env);
+          assert.equal(anthropicResponse.status,200);
+          const anthropicData=await anthropicResponse.json();
+          assert.equal(anthropicData.text,'Résultat : -4');
+          assert.equal(anthropicData.toolTrace[0].name,'calculate');
+          assert.equal(anthropicData.toolTrace[0].ok,true);
+          assert.equal(anthropicCalls,2);
+
+          let openaiCalls=0;
+          globalThis.fetch = async (url,init={}) => {
+            assert.ok(String(url).includes('api.openai.com'));
+            const payload=JSON.parse(init.body);
+            openaiCalls++;
+            if(openaiCalls===1){
+              return new Response(JSON.stringify({choices:[{message:{role:'assistant',content:null,tool_calls:[{id:'ci-call-1',type:'function',function:{name:'calculate',arguments:'{"expression":"2+2"}'}}]}}]}),{status:200,headers:{'content-type':'application/json'}});
+            }
+            const last=payload.messages.at(-1);
+            assert.equal(JSON.parse(last.content).result,4,'OpenAI tool result must be returned to the model');
+            return new Response(JSON.stringify({choices:[{message:{role:'assistant',content:'4'}}]}),{status:200,headers:{'content-type':'application/json'}});
+          };
+          const openaiResponse=await worker.fetch(post({provider:'openai',model:'ci-model',system:'test',max_tokens:512,messages:[{role:'user',content:'Calcule 2+2'}]}),env);
+          assert.equal(openaiResponse.status,200);
+          const openaiData=await openaiResponse.json();
+          assert.equal(openaiData.text,'4');
+          assert.equal(openaiData.toolTrace[0].name,'calculate');
+          assert.equal(openaiCalls,2);
+          console.log('Anthropic/OpenAI gateway tests passed.');
+          NODE

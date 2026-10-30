@@ -38,11 +38,24 @@ export function createTimer(minutes,label='Minuteur'){
 }
 export function cancelTimer(id){storage.tasks=storage.tasks.map(t=>t.id===id?{...t,status:'cancelled'}:t)}
 export function openService(name){
- const urls={deezer:'https://www.deezer.com/',youtube:'https://www.youtube.com/',netflix:'https://www.netflix.com/',disney:'https://www.disneyplus.com/',prime:'https://www.primevideo.com/',gmail:'https://mail.google.com/',outlook:'https://outlook.live.com/',calendar:'https://calendar.google.com/',maps:'https://maps.google.com/',sncf:'https://www.sncf-connect.com/',vinted:'https://www.vinted.fr/',amazon:'https://www.amazon.fr/',thomann:'https://www.thomann.de/fr/',leboncoin:'https://www.leboncoin.fr/',doctolib:'https://www.doctolib.fr/',franceinfo:'https://www.franceinfo.fr/'};
- const normalized=String(name||'').toLowerCase();const key=Object.keys(urls).find(k=>normalized.includes(k)); const url=key?urls[key]:null;if(!url)return null;window.open(url,'_blank','noopener');return {key,url};
+ const urls={
+  deezer:'https://www.deezer.com/',spotify:'https://open.spotify.com/',youtube:'https://www.youtube.com/',twitch:'https://www.twitch.tv/',
+  netflix:'https://www.netflix.com/',disney:'https://www.disneyplus.com/',prime:'https://www.primevideo.com/',canal:'https://www.canalplus.com/',
+  gmail:'https://mail.google.com/',outlook:'https://outlook.live.com/',calendar:'https://calendar.google.com/',agenda:'https://calendar.google.com/',
+  drive:'https://drive.google.com/',docs:'https://docs.google.com/document/',sheets:'https://sheets.google.com/',slides:'https://slides.google.com/',
+  maps:'https://maps.google.com/',slack:'https://slack.com/',discord:'https://discord.com/app',teams:'https://teams.microsoft.com/',
+  sncf:'https://www.sncf-connect.com/',vinted:'https://www.vinted.fr/',amazon:'https://www.amazon.fr/',thomann:'https://www.thomann.de/fr/',
+  leboncoin:'https://www.leboncoin.fr/',doctolib:'https://www.doctolib.fr/',pronote:'https://www.index-education.com/fr/pronote-info.php',
+  ameli:'https://www.ameli.fr/',franceinfo:'https://www.franceinfo.fr/'
+ };
+ const normalized=String(name||'').toLocaleLowerCase('fr');
+ const key=Object.keys(urls).sort((a,b)=>b.length-a.length).find(k=>normalized.includes(k));
+ const url=key?urls[key]:null;if(!url)return null;
+ const tab=window.open(url,'_blank');if(tab){try{tab.opener=null;}catch{}}
+ return {key,url,opened:!!tab};
 }
 
-export function webSearch(q){const url=`https://www.google.com/search?q=${encodeURIComponent(q)}`;window.open(url,'_blank','noopener');return url;}
+export function webSearch(q){const url=`https://www.google.com/search?q=${encodeURIComponent(q)}`;const tab=window.open(url,'_blank');if(tab){try{tab.opener=null;}catch{}}return {url,opened:!!tab};}
 export function notify(title,body){
  const entry={id:uid('notif'),title,body,createdAt:Date.now(),read:false};storage.notifications=[entry,...storage.notifications].slice(0,100);
  if(storage.permissions.notifications&&'Notification' in window&&Notification.permission==='granted')new Notification(title,{body});return entry;

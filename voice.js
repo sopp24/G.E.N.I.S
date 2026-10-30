@@ -26,7 +26,7 @@ export class VoiceEngine {
   speak(text,{rate=1,volume=1,voiceName='',onStart,onEnd}={}){
     if(!('speechSynthesis' in window))return false;
     window.speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(text); u.lang='fr-FR';u.rate=Math.max(.7,Math.min(1.3,rate));u.volume=Math.max(0,Math.min(1,volume));
-    const voices=window.speechSynthesis.getVoices(); if(voiceName){const v=voices.find(x=>x.name===voiceName);if(v)u.voice=v;} else {const v=voices.find(x=>/^fr(-|_)/i.test(x.lang))||voices.find(x=>/français|french/i.test(x.name));if(v)u.voice=v;}
+    const voices=window.speechSynthesis.getVoices(); if(voiceName){const v=voices.find(x=>x.name===voiceName);if(v){u.voice=v;u.lang=v.lang||u.lang;}} else {const v=voices.find(x=>/^fr(-|_)/i.test(x.lang))||voices.find(x=>/français|french/i.test(x.name));if(v){u.voice=v;u.lang=v.lang||u.lang;}}
     u.onstart=()=>{this.speaking=true;this.onState('speaking');onStart?.()};
     u.onend=()=>{this.speaking=false;this.onState('idle');onEnd?.()};
     u.onerror=()=>{this.speaking=false;this.onState('idle');onEnd?.()};

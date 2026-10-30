@@ -8,6 +8,7 @@ UI GENIS
    ↓
 Intent local
    ├── mémoire, minuteur, rappels, ouverture de services
+   ├── recherche locale d'extraits historiques pertinents à la demande
    ├── extraction locale des fichiers (PDF/Office/OCR)
    └── passerelle IA
           ↓

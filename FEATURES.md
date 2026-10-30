@@ -5,12 +5,13 @@
 | UI GENIS | ✅ | interface sombre responsive |
 | Onde réactive | ✅ | Canvas + niveau audio |
 | Microphone | ✅ | Web Speech API selon navigateur et autorisation |
-| Synthèse vocale | ✅ | SpeechSynthesis native |
+| Synthèse vocale | ✅ | SpeechSynthesis native, sélection parmi les voix françaises installées sur l'appareil |
 | Texte et conversation | ✅ | contexte partagé voix/texte |
 | Chat IA généraliste | ✅ | Anthropic / OpenAI via Worker ; clé fournisseur requise |
 | Outils IA | ✅ | heure, calculatrice sans eval, météo Open-Meteo, Wikipédia ; max. 5 tours |
 | Historique | ✅ | stockage local, conversations réouvrables |
-| Recherche historique | ✅ | recherche plein texte dans titres et messages |
+| Recherche historique | ✅ | recherche plein texte dans toutes les conversations locales |
+| Rappel de conversations | ✅ prototype | sélection d'extraits pertinents d'anciennes discussions et transmission au modèle pour répondre |
 | Mémoire | ✅ | ajout, modification, suppression, consultation locale |
 | Fichiers | ✅ prototype | TXT/MD/CSV/JSON/code, PDF, DOCX, XLSX/XLS, PPTX et OCR images ; 12 Mo max, permission requise |
 | Minuteur / rappels | ✅ local | notifications lorsque l'application est active |
@@ -29,4 +30,4 @@
 | Multitâche | 🧩 | plusieurs conversations locales, pas de fenêtres indépendantes |
 | Agents spécialisés | 🧩 | première orchestration par outils ; agents métier dédiés à développer |
 | PWA | ✅ | manifest, service worker, icônes et cache shell |
-| CI GitHub Actions | ✅ | syntaxe, manifest et présence des ressources |
+| CI GitHub Actions | ✅ | syntaxe, manifest, ressources, garde-fous DOM et tests Worker simulés (Anthropic/OpenAI) |

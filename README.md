@@ -13,11 +13,12 @@ Frontend statique à la racine du dépôt, hébergé par GitHub Pages. Passerell
 ## Fonctions réellement disponibles
 
 - Interface sombre, responsive, onde audio centrale et dock.
-- Reconnaissance vocale via Web Speech API (selon navigateur) et synthèse vocale native.
+- Reconnaissance vocale via Web Speech API (selon navigateur) et synthèse vocale native avec sélection des voix françaises disponibles sur l'appareil.
 - Conversation généraliste via Anthropic ou OpenAI, avec contexte et souvenirs facultatifs.
 - Appels d'outils côté Worker : heure locale/fuseau horaire, calculatrice sécurisée sans eval, météo Open-Meteo et recherche Wikipédia.
 - Trace visible des outils utilisés dans la réponse.
-- Historique local avec recherche plein texte, conversations réouvrables et export JSON.
+- Historique local complet avec recherche plein texte sur toutes les conversations, conversations réouvrables et export JSON.
+- Rappel contextuel : lors d'une demande explicite sur une ancienne discussion, GENIS retrouve quelques extraits pertinents dans les autres conversations locales.
 - Mémoire locale consultable, modifiable et supprimable.
 - Minuteurs et rappels locaux ; ils ne sont pas garantis si le navigateur ferme/suspend l'application.
 - Météo Open-Meteo, géolocalisation uniquement après autorisation.
@@ -69,17 +70,17 @@ Modèles par défaut : `claude-haiku-4-5-20251001` et `gpt-4.1-mini`. Le compte 
 
 ## Fichiers et confidentialité
 
-Les fichiers sont extraits localement dans le navigateur. Leur texte n'est transmis au fournisseur IA que lorsque l'utilisateur envoie explicitement un message avec ces pièces jointes. Les souvenirs sélectionnés sont ajoutés au contexte envoyé au fournisseur. Ne mémorisez ni ne joignez des informations que vous ne souhaitez pas lui transmettre.
+Les fichiers sont extraits localement dans le navigateur. Leur texte n'est transmis au fournisseur IA que lorsque l'utilisateur envoie explicitement un message avec ces pièces jointes. Le texte des pièces jointes transmis au modèle est limité à 48 000 caractères cumulés par demande. Les souvenirs sélectionnés sont ajoutés au contexte envoyé au fournisseur. Lorsqu'une demande évoque clairement une discussion passée, quelques extraits pertinents sont recherchés dans l'historique local et transmis au fournisseur pour reconstituer le contexte. Ne mémorisez ni ne joignez des informations que vous ne souhaitez pas lui transmettre.
 
 Le secret partagé est conservé dans le stockage local du navigateur : ce n'est pas un coffre-fort. Ne partagez pas cet appareil/profil de navigateur. Les clés API fournisseurs restent uniquement dans les secrets Cloudflare.
 
 ## Qualité
 
-`npm test` vérifie la syntaxe JavaScript. GitHub Actions exécute également les contrôles du manifest PWA et la présence des ressources frontend à chaque push / pull request sur `main`.
+`npm test` vérifie la syntaxe JavaScript. GitHub Actions contrôle également le manifest PWA, les ressources, les sélecteurs DOM utilisés en collection, les branchements de la voix et des fichiers, et exécute des tests Worker simulant des appels d'outils Anthropic et OpenAI, les erreurs d'authentification et les limites de taille.
 
 ## Limites techniques
 
-- Les APIs vocales dépendent du navigateur et de la langue installée.
+- Les APIs vocales dépendent du navigateur et de la langue installée. Le choix d'une voix dépend des voix de synthèse réellement proposées par l'appareil.
 - Le chargement initial des bibliothèques PDF/Office/OCR nécessite Internet.
 - Les outils IA nécessitent le Worker et une clé API valide.
 - La PWA ne peut pas librement piloter les applications natives ou les comptes sans API/OAuth.
