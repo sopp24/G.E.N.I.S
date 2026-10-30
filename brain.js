@@ -23,7 +23,7 @@ export async function localIntent(text,context={}){
  if(/^(?:réserve|effectue une réservation|commande|achète|passe commande)\b/i.test(t)){return say('Je peux vous aider à préparer cette démarche, mais sa réalisation nécessite un connecteur autorisé et une confirmation avant toute action engageante.',{tool:'booking'});}
  if(/^(?:envoie|envoyer|rédige et envoie|supprime|archive|recherche dans)\s+(?:un\s+)?(?:mail|e-?mail|courriel)|^(?:connecte|ouvre)\s+(?:ma\s+)?(?:boîte mail|gmail|outlook)/i.test(t)){return say('Le connecteur mail nécessite encore une authentification. Je peux toutefois vous aider à rédiger, reformuler ou préparer un e-mail dans cette conversation.',{tool:'mail'});}
  if(/^(?:ajoute|crée|déplace|annule|supprime|planifie|programme)\s+.{0,80}\s+(?:dans|à)\s+(?:mon\s+)?(?:agenda|calendrier)|^(?:connecte|ouvre)\s+(?:mon\s+)?agenda/i.test(t)){return say('Le connecteur agenda nécessite encore une authentification. Je peux néanmoins vous aider à organiser le rendez-vous et à préparer son contenu.',{tool:'calendar'});}
- if(/paiement|paye|achète|achat|commande/i.test(t)){return say('Cette action est protégée : aucun paiement n’est déclenché automatiquement dans cette version. Une authentification forte et la confirmation appropriée seront nécessaires.',{tool:'security',risk:4});}
+ if(/^(?:paie|paye|effectue le paiement|achète|passe commande|valide l’achat)\\b/i.test(t)){return say('Cette action est protégée : aucun paiement n’est déclenché automatiquement dans cette version. Une authentification forte et une confirmation explicite seront nécessaires.',{tool:'security',risk:4});}
  return null;
 }
 
