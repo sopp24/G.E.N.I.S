@@ -27,9 +27,9 @@ async function enableMic(){
  if(!navigator.mediaDevices?.getUserMedia){toast('Ce navigateur ne permet pas l’accès au microphone dans ce contexte.');return;}
  if(!voice.supported()){toast('La reconnaissance vocale du navigateur n’est pas disponible.');return;}
  try{
-   if(!micStream){micStream=await navigator.mediaDevices.getUserMedia({audio:true});audioCtx=new (window.AudioContext||window.webkitAudioContext)();await audioCtx.resume();const src=audioCtx.createMediaStreamSource(micStream);const an=audioCtx.createAnalyser();an.fftSize=128;src.connect(an);waveform.attachAnalyser(an);}
+   if(!micStream){const AudioContextClass=window.AudioContext||window.webkitAudioContext;if(AudioContextClass){audioCtx=new AudioContextClass();try{await audioCtx.resume();}catch{}}micStream=await navigator.mediaDevices.getUserMedia({audio:true});if(audioCtx){const src=audioCtx.createMediaStreamSource(micStream);const an=audioCtx.createAnalyser();an.fftSize=128;src.connect(an);waveform.attachAnalyser(an);}}
    settings.micEnabled=true;storage.settings=settings;els.micButton.setAttribute('aria-pressed','true');els.micHint.textContent='Micro actif';voice.start();
- }catch{toast('Le microphone est bloqué. Vérifiez l’autorisation du navigateur.');}
+ }catch{micStream?.getTracks().forEach(t=>t.stop());micStream=null;if(audioCtx&&audioCtx.state!=='closed')audioCtx.close().catch(()=>{});audioCtx=null;waveform.attachAnalyser(null);toast('Le microphone est bloqué. Vérifiez l’autorisation du navigateur.');}
 }
 function disableMic(){voice.stop();micStream?.getTracks().forEach(t=>t.stop());micStream=null;waveform.attachAnalyser(null);waveform.setLevel(.04);if(audioCtx&&audioCtx.state!=='closed')audioCtx.close().catch(()=>{});audioCtx=null;settings.micEnabled=false;storage.settings=settings;els.micButton.setAttribute('aria-pressed','false');els.micHint.textContent='Micro désactivé';setVisualState('idle');}
 function handleTranscript({finalText,interimText}){if(interimText){els.stateDetail.textContent=interimText;waveform.setLevel(Math.min(1,0.15+interimText.length/80));}if(finalText){els.input.value=finalText;isProcessingVoice=true;sendPrompt(finalText,true).finally(()=>{isProcessingVoice=false;});}}
