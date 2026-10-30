@@ -12,7 +12,7 @@ permissions:
 
 concurrency:
   group: genis-quality-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   validate:
@@ -45,6 +45,8 @@ jobs:
           const sw = fs.readFileSync('sw.js', 'utf8');
           const voice = fs.readFileSync('voice.js', 'utf8');
           const waveform = fs.readFileSync('waveform.js', 'utf8');
+          const brain = fs.readFileSync('brain.js', 'utf8');
+          const storage = fs.readFileSync('storage.js', 'utf8');
           const brokenSelectors = app.match(/(?<!\$)\$\([^)]*\)\??\.forEach/g) || [];
           assert.equal(brokenSelectors.length, 0, 'Do not call forEach() on querySelector() results');
           for (const id of ['app','messages','promptForm','promptInput','micButton','drawer','drawerContent','fileInput','attachButton','dock']) {
@@ -60,10 +62,19 @@ jobs:
           assert.ok(voice.includes('lastRecognitionError'), 'Speech recognition error state must not be overwritten by onend');
           assert.ok(waveform.includes('prefers-reduced-motion: reduce'), 'Waveform must respect reduced-motion settings');
           assert.ok(app.includes('function buildAttachmentContext'), 'Attachment context size guard is missing');
+          assert.ok(app.includes("const diagnostic='Échec pendant '+stage"), 'Action errors must expose the failing stage and original cause');
+          assert.ok(!app.includes("toast('Action interrompue')"), 'Generic Action interrupted toast must be removed');
+          assert.ok(app.includes('let isSending=false'), 'Concurrent sends must be guarded');
+          assert.ok(brain.includes('export async function checkGatewayConnection'), 'Gateway connection diagnostic is missing');
+          assert.ok(brain.includes('gatewayErrorForStatus'), 'Gateway HTTP errors must be classified');
+          assert.ok(storage.includes('persistenceWarning') && storage.includes('volatileStore'), 'Storage quota errors must not stop the action');
+
           assert.ok(app.includes('activeChat.id'), 'Current chat id is not passed to history recall');
           assert.ok(app.includes('data-edit-auto-trigger') && app.includes('data-add-auto-action') && app.includes('data-remove-auto-action'), 'Automation edit and multi-action controls are missing');
           assert.ok(css.includes('grid-area:1 / 1'), 'Responsive conversation overlay must stay inside the workspace grid');
           assert.ok(workerSource.includes('readLimitedBody') && workerSource.includes('MAX_REQUEST_BYTES'), 'Gateway request size guard is missing');
+          assert.ok(workerSource.includes("request.method==='GET'") && workerSource.includes("service:'GENIS Gateway'"), 'Worker health endpoint is missing');
+
           assert.ok(sw.includes("const CACHE='genis-v9';"), 'Service worker cache must be bumped when the app shell changes');
           console.log('GENIS runtime guards passed.');
           NODE
