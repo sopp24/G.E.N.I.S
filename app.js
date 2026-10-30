@@ -55,7 +55,7 @@ async function sendPrompt(text,fromVoice=false){
      }
    }
    addMessage('assistant',result.text,result.meta||{});setVisualState('speaking');
-   if(settings.voiceEnabled)voice.speak(result.text,{rate:settings.speechRate,volume:settings.volume,onStart:()=>{if(settings.micEnabled)voice.stop();},onEnd:()=>{if(settings.micEnabled)voice.start();else setVisualState('idle');}});else setVisualState('idle');
+   if(settings.voiceEnabled){const spoken=voice.speak(result.text,{rate:settings.speechRate,volume:settings.volume,onStart:()=>{if(settings.micEnabled)voice.stop();},onEnd:()=>{if(settings.micEnabled)voice.start();else setVisualState('idle');}});if(!spoken)setVisualState('idle');}else setVisualState('idle');
  }catch(e){addMessage('assistant',`Je n’ai pas pu terminer cette action : ${e.message||e}`,{error:true});setVisualState('error',e.message);toast('Action interrompue');}
 }
 function getAutomationMatches(text){return storage.automations.filter(a=>a.enabled&&text.toLowerCase().includes(a.trigger.toLowerCase()));}
