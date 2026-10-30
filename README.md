@@ -42,7 +42,7 @@ GENIS/
 - Conversation texte et voix partagée.
 - Historique local des conversations.
 - Mémoire locale consultable, modifiable et supprimable.
-- Lecture de fichiers texte (TXT, Markdown, CSV, JSON, HTML, XML et LOG) avec une limite de 2 Mo par fichier ; les PDF et documents Office ne sont pas encore extraits.
+- Lecture de fichiers texte (TXT, Markdown, CSV, JSON, HTML, XML et LOG) après activation de la permission Fichiers, avec une limite de 2 Mo par fichier ; les PDF et documents Office ne sont pas encore extraits.
 - Minuteurs locaux.
 - Météo via Open-Meteo, avec géolocalisation facultative.
 - Ouverture préparée des services courants (Deezer, YouTube, Gmail, Agenda, SNCF, Vinted, etc.) sans prétendre contrôler les comptes.
