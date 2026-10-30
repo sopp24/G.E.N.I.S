@@ -183,7 +183,7 @@ jobs:
             headers:{'origin':origin,'access-control-request-method':'GET','access-control-request-headers':'x-app-secret'}
           }),env);
           assert.equal(preflight.status,200);
-          assert.match(preflight.headers.get('Access-Control-Allow-Methods')||'',/\\bGET\\b/,'Worker CORS must allow the GET health check');
+          assert.match(preflight.headers.get('Access-Control-Allow-Methods')||'',/GET/,'Worker CORS must allow the GET health check');
           const unauthorized = await worker.fetch(post({messages:[{role:'user',content:'test'}]},'wrong-secret'),env);
           assert.equal(unauthorized.status,403,'Worker must reject a wrong APP_SECRET');
           const forbiddenOrigin = await worker.fetch(post({messages:[{role:'user',content:'test'}]},'ci-only-secret','https://untrusted.example'),env);
