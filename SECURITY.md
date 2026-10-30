@@ -38,5 +38,6 @@ L'accès aux fichiers doit rester explicite. Une future intégration de fichiers
 
 - La géolocalisation n'est sollicitée que si l'autorisation **Localisation** a été activée dans GENIS. Une ville par défaut peut aussi être définie dans les réglages.
 - L'accès au microphone est contrôlé par la permission GENIS et par la permission du navigateur. Le microphone est désactivé au chargement de chaque nouvelle session ; l'utilisateur doit le réactiver explicitement.
-- Les fichiers texte pris en charge sont lus localement et transmis à la passerelle IA uniquement lorsque l'utilisateur envoie une demande. Les formats binaires (PDF, DOCX, images, etc.) ne sont pas extraits dans cette version.
+- La lecture de fichiers exige l’activation de la permission **Fichiers** dans GENIS. Les fichiers texte pris en charge sont lus localement et transmis à la passerelle IA uniquement lorsque l’utilisateur envoie une demande. Les formats binaires (PDF, DOCX, images, etc.) ne sont pas extraits dans cette version.
+- Les notifications système nécessitent à la fois la permission **Notifications** dans GENIS et l’autorisation du navigateur. Désactiver la permission dans GENIS empêche l’envoi de notifications système même si le navigateur reste autorisé.
 - La réinitialisation supprime uniquement les clés `genis:` dans le stockage local et ne vide pas les données des autres applications partageant la même origine.
