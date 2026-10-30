@@ -1,14 +1,42 @@
 const PREFIX = 'genis:';
+const volatileStore = new Map();
+const storageErrors = new Map();
 
 function read(key, fallback) {
-  try { const value = localStorage.getItem(PREFIX + key); return value == null ? fallback : JSON.parse(value); }
-  catch { return fallback; }
+  if (volatileStore.has(key)) return volatileStore.get(key);
+  try {
+    const value = localStorage.getItem(PREFIX + key);
+    return value == null ? fallback : JSON.parse(value);
+  } catch (error) {
+    storageErrors.set(key, error?.name || 'StorageError');
+    return fallback;
+  }
 }
-function write(key, value) { localStorage.setItem(PREFIX + key, JSON.stringify(value)); }
-function remove(key) { localStorage.removeItem(PREFIX + key); }
+function write(key, value) {
+  try {
+    localStorage.setItem(PREFIX + key, JSON.stringify(value));
+    volatileStore.delete(key);
+    storageErrors.delete(key);
+  } catch (error) {
+    volatileStore.set(key, value);
+    storageErrors.set(key, error?.name || 'StorageError');
+  }
+}
+function remove(key) {
+  try {
+    localStorage.removeItem(PREFIX + key);
+    volatileStore.delete(key);
+    storageErrors.delete(key);
+  } catch (error) {
+    volatileStore.delete(key);
+    storageErrors.set(key, error?.name || 'StorageError');
+  }
+}
 
 export const storage = {
   read, write, remove,
+  get persistenceWarning(){ return storageErrors.size ? 'Le stockage local est indisponible ou plein. Les changements récents sont conservés uniquement jusqu’à la fermeture ou l’actualisation de cette page.' : ''; },
+  get persistenceAvailable(){ return storageErrors.size===0; },
   get settings(){ return read('settings', {theme:'dark', voiceEnabled:true, micEnabled:false, speechRate:1, volume:1, voiceName:'', gatewayUrl:'', gatewaySecret:'', provider:'anthropic', model:'claude-haiku-4-5-20251001', defaultCity:''}); },
   set settings(v){ write('settings', v); },
   get chats(){ return read('chats', []); }, set chats(v){ write('chats', v); },

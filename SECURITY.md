@@ -16,6 +16,7 @@ Une réponse textuelle ne prouve jamais qu'une action externe a été réalisée
 - Cloudflare Worker : secret `APP_SECRET` et clé fournisseur `ANTHROPIC_API_KEY` ou `OPENAI_API_KEY`.
 - `AI_PROVIDER` doit correspondre au fournisseur configuré.
 - `ALLOWED_ORIGIN` contient les origines exactes autorisées, jamais `*`.
+- Le diagnostic `GET` du Worker n'expose aucune valeur de secret : il indique uniquement si le secret existe, s'il correspond au secret partagé fourni et quelles clés fournisseur sont présentes.
 - Le secret partagé saisi dans GENIS est stocké dans le localStorage : ce n'est pas un coffre-fort.
 - Les souvenirs choisis sont transmis au fournisseur IA avec les requêtes.
 - Lorsqu'une demande fait explicitement référence à une discussion passée, GENIS recherche des extraits pertinents dans les autres conversations stockées localement et transmet uniquement ces extraits sélectionnés au fournisseur IA pour répondre.

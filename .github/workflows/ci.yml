@@ -64,8 +64,77 @@ jobs:
           assert.ok(app.includes('data-edit-auto-trigger') && app.includes('data-add-auto-action') && app.includes('data-remove-auto-action'), 'Automation edit and multi-action controls are missing');
           assert.ok(css.includes('grid-area:1 / 1'), 'Responsive conversation overlay must stay inside the workspace grid');
           assert.ok(workerSource.includes('readLimitedBody') && workerSource.includes('MAX_REQUEST_BYTES'), 'Gateway request size guard is missing');
-          assert.ok(sw.includes("const CACHE='genis-v8';"), 'Service worker cache must be bumped when the app shell changes');
+          assert.ok(sw.includes("const CACHE='genis-v9';"), 'Service worker cache must be bumped when the app shell changes');
           console.log('GENIS runtime guards passed.');
+          NODE
+      - name: Frontend gateway diagnostic tests
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+
+          const values = new Map();
+          globalThis.localStorage = {
+            getItem: key => values.has(key) ? values.get(key) : null,
+            setItem: (key, value) => values.set(key, String(value)),
+            removeItem: key => values.delete(key),
+            key: index => [...values.keys()][index] ?? null,
+            get length() { return values.size; }
+          };
+          const settings = {
+            gatewayUrl:'https://genis-worker.test/',
+            gatewaySecret:'ci-only-secret',
+            provider:'anthropic',
+            model:'ci-model',
+            voiceEnabled:false,
+            speechRate:1,
+            volume:1,
+            voiceName:''
+          };
+          for (const [key,value] of Object.entries({
+            settings,
+            memories:[],
+            chats:[],
+            automations:[],
+            tasks:[],
+            notifications:[],
+            permissions:{}
+          })) localStorage.setItem('genis:'+key,JSON.stringify(value));
+
+          let healthSecretAccepted = true;
+          let postStatus = 200;
+          globalThis.fetch = async (_url,init={}) => {
+            if (init.method==='GET') {
+              return new Response(JSON.stringify({
+                status:'ok',
+                service:'GENIS Gateway',
+                version:'ci',
+                appSecretConfigured:true,
+                appSecretAccepted:healthSecretAccepted,
+                providers:{anthropic:true,openai:true}
+              }),{status:200,headers:{'content-type':'application/json'}});
+            }
+            if (postStatus!==200) return new Response(JSON.stringify({error:{message:'Clé API fournisseur invalide.'}}),{status:postStatus,headers:{'content-type':'application/json'}});
+            return new Response(JSON.stringify({text:'GENIS OK',toolTrace:[]}),{status:200,headers:{'content-type':'application/json'}});
+          };
+
+          const {checkGatewayConnection,aiChat}=await import('./brain.js');
+          const health=await checkGatewayConnection();
+          assert.equal(health.provider,'anthropic');
+          const answer=await aiChat('test',[]);
+          assert.equal(answer.text,'GENIS OK');
+
+          healthSecretAccepted=false;
+          await assert.rejects(checkGatewayConnection(),/ne correspond pas à APP_SECRET/);
+
+          healthSecretAccepted=true;
+          postStatus=503;
+          await assert.rejects(aiChat('test',[]),/Clé API fournisseur invalide/);
+
+          settings.gatewayUrl='';
+          localStorage.setItem('genis:settings',JSON.stringify(settings));
+          await assert.rejects(checkGatewayConnection(),/URL de passerelle absente/);
+
+          console.log('Frontend gateway diagnostics passed.');
           NODE
       - name: Gateway integration tests (Anthropic + OpenAI)
         run: |

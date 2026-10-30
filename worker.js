@@ -23,6 +23,22 @@ export default {
   if(!origin||!allowed.includes(origin))return json({error:{message:'Origine non autorisée.'}},403);
   const cors=corsHeaders(origin);
   if(request.method==='OPTIONS')return new Response(null,{headers:cors});
+  if(request.method==='GET'){
+   const configuredProvider=String(env.AI_PROVIDER||'anthropic').toLowerCase();
+   const secretProvided=request.headers.get('x-app-secret')||'';
+   const secretConfigured=!!env.APP_SECRET;
+   const providers={anthropic:!!env.ANTHROPIC_API_KEY,openai:!!env.OPENAI_API_KEY};
+   return json({
+    status:'ok',
+    service:'GENIS Gateway',
+    version:'2026-10-30-health-1',
+    appSecretConfigured:secretConfigured,
+    appSecretAccepted:secretConfigured&&constantTimeEqual(secretProvided,env.APP_SECRET),
+    provider:configuredProvider,
+    defaultModel:DEFAULT_MODELS[configuredProvider]||DEFAULT_MODELS.anthropic,
+    providers
+   },200,cors);
+  }
   if(request.method!=='POST')return json({error:{message:'Méthode non autorisée.'}},405,cors);
   if(!env.APP_SECRET)return json({error:{message:'APP_SECRET doit être configuré côté Cloudflare.'}},503,cors);
   if(!constantTimeEqual(request.headers.get('x-app-secret')||'',env.APP_SECRET))return json({error:{message:'Secret passerelle incorrect.'}},403,cors);

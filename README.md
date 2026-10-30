@@ -64,9 +64,9 @@ Le fichier `worker.js` est autonome et son déploiement est préparé par `wrang
 4. Régler `AI_PROVIDER` dans `wrangler.toml` sur `anthropic` ou `openai`.
 5. Vérifier `ALLOWED_ORIGIN` (origine exacte de GitHub Pages).
 6. Déployer : `npx wrangler deploy`.
-7. Dans GENIS → Réglages → Connexion IA, choisir le même fournisseur, coller l'URL du Worker et le secret partagé.
+7. Dans GENIS → Réglages → Connexion IA, choisir le même fournisseur, coller l'URL du Worker et le secret partagé. Utiliser ensuite **Tester la connexion** : GENIS vérifie l'URL, la présence d'`APP_SECRET`, sa correspondance avec le navigateur et la présence de la clé API avant de lancer un véritable test IA.
 
-Modèles par défaut : `claude-haiku-4-5-20251001` et `gpt-4.1-mini`. Le compte fournisseur doit être approvisionné. GitHub Pages ne fournit pas lui-même un modèle IA gratuit.
+Modèles par défaut : `claude-haiku-4-5-20251001` et `gpt-4.1-mini`. Le compte fournisseur doit être approvisionné. GitHub Pages ne fournit pas lui-même un modèle IA gratuit. Après toute modification de `worker.js`, il faut redéployer ce fichier sur Cloudflare : le déploiement GitHub Pages ne publie pas le Worker.
 
 ## Fichiers et confidentialité
 

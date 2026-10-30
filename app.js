@@ -1,7 +1,7 @@
 import {storage,uid} from './storage.js';
 import {VoiceEngine} from './voice.js';
 import {Waveform} from './waveform.js';
-import {localIntent,aiChat} from './brain.js';
+import {localIntent,aiChat,checkGatewayConnection} from './brain.js';
 import {notify,openService} from './tools.js';
 import {CONNECTORS} from './index.js';
 
@@ -9,7 +9,7 @@ const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const els={messages:$('#messages'),input:$('#promptInput'),statusText:$('#statusText'),statusDot:$('#statusDot'),stateKicker:$('#stateKicker'),stateDetail:$('#stateDetail'),micButton:$('#micButton'),micHint:$('#micHint'),drawer:$('#drawer'),drawerContent:$('#drawerContent'),drawerTitle:$('#drawerTitle'),toast:$('#toast'),app:$('#app'),clock:$('#clock'),actionRail:$('#actionRail')};
 let settings=storage.settings;
 if(settings.micEnabled){settings.micEnabled=false;storage.settings=settings;}
-let activeChat=null;let pendingAttachments=[];let isProcessingVoice=false;
+let activeChat=null;let pendingAttachments=[];let isProcessingVoice=false;let isSending=false;
 let waveform=new Waveform($('#waveCanvas'));let audioCtx=null;let micStream=null;
 const voice=new VoiceEngine({onTranscript:handleTranscript,onState:(state,detail)=>{if(state==='idle'&&(isProcessingVoice||voice.speaking))return;if(state==='error'&&settings.micEnabled){micStream?.getTracks().forEach(t=>t.stop());micStream=null;waveform.attachAnalyser(null);if(audioCtx&&audioCtx.state!=='closed')audioCtx.close().catch(()=>{});audioCtx=null;settings.micEnabled=false;storage.settings=settings;els.micButton.setAttribute('aria-pressed','false');els.micHint.textContent='Micro désactivé';}setVisualState(state,detail);}});
 
@@ -70,27 +70,49 @@ function buildAttachmentContext(attachments){
 
 async function sendPrompt(text,fromVoice=false){
  text=String(text||'').trim();if(!text)return;
+ if(isSending){toast('GENIS traite déjà votre demande. Attendez sa réponse avant d’en envoyer une autre.');return;}
+ isSending=true;
  const attachments=pendingAttachments;pendingAttachments=[];
- const attachmentLabel=attachments.length?'\n\nFichiers joints : '+attachments.map(f=>f.name).join(', '):'';
- addMessage('user',text+attachmentLabel);els.input.value='';els.input.style.height='44px';setVisualState('thinking');
- let result=null;
+ const attachmentLabel=attachments.length?'\\n\\nFichiers joints : '+attachments.map(f=>f.name).join(', '):'';
+ let stage='enregistrement de la demande',result=null;
  try{
+   addMessage('user',text+attachmentLabel);
+   els.input.value='';els.input.style.height='44px';setVisualState('thinking');
+   stage='vérification des automatisations';
    const matches=getAutomationMatches(text);
    if(matches.length){
+     stage='exécution de l’automatisation';
      const summaries=[];
      for(const automation of matches)summaries.push(...await executeAutomation(automation));
-     result={text:summaries.join('\n')||'Automatisation exécutée.',meta:{tool:'automation'}};
+     result={text:summaries.join('\\n')||'Automatisation exécutée.',meta:{tool:'automation'}};
    }else{
+     stage='exécution de la commande locale';
      result=await localIntent(text,{chat:activeChat});
      if(!result){
+       stage='connexion à la passerelle IA';
        const fileContext=buildAttachmentContext(attachments);
-       const ai=await aiChat(text+fileContext,activeChat.messages.slice(0,-1),activeChat.id);
-       result=ai||{text:attachments.length?'Les fichiers texte ont bien été lus, mais aucune passerelle IA n’est configurée pour les analyser. Configurez la passerelle dans Réglages → Connexion IA.':'Je n’ai pas encore de connecteur pour cette action. Je peux néanmoins ouvrir un service, préparer une recherche ou gérer les fonctions locales. Consultez Applications pour voir les capacités disponibles.'};
+       result=await aiChat(text+fileContext,activeChat.messages.slice(0,-1),activeChat.id);
      }
    }
-   addMessage('assistant',result.text,result.meta||{});setVisualState('speaking');
-   if(settings.voiceEnabled){const spoken=voice.speak(result.text,{rate:settings.speechRate,volume:settings.volume,voiceName:settings.voiceName||'',onStart:()=>{if(settings.micEnabled)voice.stop();},onEnd:()=>{if(settings.micEnabled)voice.start();else setVisualState('idle');}});if(!spoken)setVisualState('idle');}else setVisualState('idle');
- }catch(e){addMessage('assistant',`Je n’ai pas pu terminer cette action : ${e.message||e}`,{error:true});setVisualState('error',e.message);toast('Action interrompue');}
+   stage='enregistrement de la réponse';
+   addMessage('assistant',result?.text||'GENIS n’a reçu aucun résultat exploitable.',result?.meta||{});
+   if(storage.persistenceWarning)toast(storage.persistenceWarning);
+   stage='synthèse vocale';
+   setVisualState('speaking');
+   if(settings.voiceEnabled){
+     const spoken=voice.speak(result.text,{rate:settings.speechRate,volume:settings.volume,voiceName:settings.voiceName||'',onStart:()=>{if(settings.micEnabled)voice.stop();},onEnd:()=>{if(settings.micEnabled)voice.start();else setVisualState('idle');}});
+     if(!spoken)setVisualState('idle');
+   }else setVisualState('idle');
+ }catch(error){
+   const detail=String(error?.message||error||'Erreur inconnue');
+   const diagnostic='Échec pendant '+stage+' : '+detail;
+   console.error('[GENIS]',diagnostic,error);
+   setVisualState('error',diagnostic);
+   try{addMessage('assistant',diagnostic,{error:true,stage});}catch(storageError){console.error('[GENIS] Impossible d’enregistrer le diagnostic :',storageError);}
+   toast(diagnostic.length>150?diagnostic.slice(0,147)+'…':diagnostic);
+ }finally{
+   isSending=false;
+ }
 }
 function getAutomationMatches(text){const normalized=String(text||'').trim().toLocaleLowerCase('fr');return storage.automations.filter(a=>{const trigger=String(a.trigger||'').trim().toLocaleLowerCase('fr');const next=normalized.charAt(trigger.length);const boundary=!next||next.trim()===''||',;:!?'.includes(next);return !!a.enabled&&!!trigger&&(normalized===trigger||(normalized.startsWith(trigger)&&boundary));});}
 async function executeAutomation(a){const results=[];for(const action of a.actions||[]){if(action.kind==='say'){results.push(String(action.value||''));}else if(action.kind==='open'){const opened=openService(String(action.value||''));results.push(!opened?`Je ne connais pas le service « ${String(action.value||'')} » : aucune page n’a été ouverte.`:opened.opened?`Ouverture de ${opened.key} demandée.`:`Le navigateur a bloqué l’ouverture de ${opened.key}.`);}else if(action.kind==='timer'){const mins=Number(action.value);if(mins>0){const timer=await localIntent(`Mets un minuteur de ${mins} minutes`);results.push(timer?.text||'Le minuteur n’a pas pu être créé.');}else results.push('Le délai du minuteur est invalide.');}else results.push(`Action non prise en charge : ${String(action.kind||'inconnue')}.`);}storage.automations=storage.automations.map(item=>item.id===a.id?{...item,lastRun:Date.now()}:item);return results;}
@@ -164,8 +186,8 @@ function bindDrawer(){
  $('#gatewayUrl')?.addEventListener('change',e=>settings.gatewayUrl=e.target.value.trim());
  $('#gatewaySecret')?.addEventListener('change',e=>settings.gatewaySecret=e.target.value.trim());
  $('#model')?.addEventListener('change',e=>settings.model=e.target.value.trim());
- $('[data-save-settings]')?.addEventListener('click',()=>{storage.settings=settings;toast('Réglages enregistrés');});
- $('[data-test-gateway]')?.addEventListener('click',async()=>{if(!settings.gatewayUrl?.trim()){toast('Configurez d’abord l’URL de la passerelle.');return;}try{const result=await aiChat('Réponds uniquement par « GENIS OK ».',[]);if(!result?.text||result.text==='La passerelle IA a répondu sans contenu.')throw new Error('La passerelle n’a retourné aucun texte exploitable.');toast('Passerelle opérationnelle');}catch(e){toast('Échec : '+e.message);}});
+ $('[data-save-settings]')?.addEventListener('click',()=>{storage.settings=settings;toast(storage.persistenceWarning||'Réglages enregistrés');});
+ $('[data-test-gateway]')?.addEventListener('click',async e=>{const button=e.currentTarget;button.disabled=true;const original=button.textContent;button.textContent='Diagnostic…';try{const health=await checkGatewayConnection();toast('Worker connecté · '+health.provider+' · clé et secret vérifiés. Test IA…');const result=await aiChat('Réponds uniquement par « GENIS OK ».',[]);if(!result?.text)throw new Error('Le fournisseur n’a renvoyé aucune réponse.');toast('Passerelle opérationnelle · '+health.provider);}catch(error){const message='Diagnostic passerelle : '+(error?.message||error);toast(message);console.error('[GENIS Gateway]',error);}finally{button.disabled=false;button.textContent=original;}});
  $('[data-export]')?.addEventListener('click',()=>{const blob=new Blob([JSON.stringify({settings:{...settings,gatewaySecret:''},memories:storage.memories,chats:storage.chats,automations:storage.automations,tasks:storage.tasks,notifications:storage.notifications,permissions:storage.permissions},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='genis-backup.json';a.click();URL.revokeObjectURL(a.href);});
  $('[data-reset]')?.addEventListener('click',()=>{if(confirm('Effacer les données locales de GENIS ?')){for(let i=localStorage.length-1;i>=0;i--){const key=localStorage.key(i);if(key?.startsWith('genis:'))localStorage.removeItem(key);}location.reload();}});
 }
