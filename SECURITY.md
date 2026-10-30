@@ -33,7 +33,7 @@ La version livrée ne réalise aucun paiement ni virement. Toute intégration ba
 
 ## Fichiers
 
-L'accès aux fichiers doit rester explicite. Une future intégration de fichiers devra distinguer lecture, modification et suppression. La suppression définitive doit être classée sensible.
+L’accès aux fichiers est soumis à la permission **Fichiers**. Cette version permet uniquement de lire certains formats texte (TXT, Markdown, CSV, JSON, HTML, XML et LOG) ; elle ne modifie ni ne supprime aucun fichier local. Toute extension future devra distinguer lecture, modification et suppression, cette dernière étant toujours une action sensible.
 ## Autorisation et fichiers locaux
 
 - La géolocalisation n'est sollicitée que si l'autorisation **Localisation** a été activée dans GENIS. Une ville par défaut peut aussi être définie dans les réglages.
