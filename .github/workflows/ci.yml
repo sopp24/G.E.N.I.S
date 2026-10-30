@@ -43,6 +43,8 @@ jobs:
           const workerSource = fs.readFileSync('worker.js', 'utf8');
           const css = fs.readFileSync('styles.css', 'utf8');
           const sw = fs.readFileSync('sw.js', 'utf8');
+          const voice = fs.readFileSync('voice.js', 'utf8');
+          const waveform = fs.readFileSync('waveform.js', 'utf8');
           const brokenSelectors = app.match(/(?<!\$)\$\([^)]*\)\??\.forEach/g) || [];
           assert.equal(brokenSelectors.length, 0, 'Do not call forEach() on querySelector() results');
           for (const id of ['app','messages','promptForm','promptInput','micButton','drawer','drawerContent','fileInput','attachButton','dock']) {
@@ -54,6 +56,9 @@ jobs:
           assert.ok(html.includes('title="Fermer les réglages"'), 'Settings close control is missing');
           assert.ok(app.includes('function refreshVoiceSelector'), 'Voice selector is missing');
           assert.ok(app.includes('voiceName:settings.voiceName'), 'Selected voice is not connected to speech output');
+          assert.ok(app.includes('isProcessingVoice=true;voice.stop()'), 'Speech input should stop while GENIS processes a transcript');
+          assert.ok(voice.includes('lastRecognitionError'), 'Speech recognition error state must not be overwritten by onend');
+          assert.ok(waveform.includes('prefers-reduced-motion: reduce'), 'Waveform must respect reduced-motion settings');
           assert.ok(app.includes('function buildAttachmentContext'), 'Attachment context size guard is missing');
           assert.ok(app.includes('activeChat.id'), 'Current chat id is not passed to history recall');
           assert.ok(app.includes('data-edit-auto-trigger') && app.includes('data-add-auto-action') && app.includes('data-remove-auto-action'), 'Automation edit and multi-action controls are missing');

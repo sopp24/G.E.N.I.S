@@ -6,9 +6,9 @@ export class VoiceEngine {
     if(SR){
       this.recognition=new SR();
       this.recognition.lang='fr-FR'; this.recognition.interimResults=true; this.recognition.continuous=true;
-      this.recognition.onstart=()=>{this.listening=true;this.onState('listening')};
-      this.recognition.onend=()=>{this.listening=false;this.onState('idle')};
-      this.recognition.onerror=(e)=>{this.listening=false;this.onState('error',e.error||'microphone')};
+      this.recognition.onstart=()=>{this.listening=true;this.lastRecognitionError='';this.onState('listening')};
+      this.recognition.onend=()=>{this.listening=false;if(this.lastRecognitionError){this.lastRecognitionError='';return;}this.onState('idle')};
+      this.recognition.onerror=(e)=>{this.listening=false;this.lastRecognitionError=e.error||'microphone';this.onState('error',this.lastRecognitionError)};
       this.recognition.onresult=(event)=>{
         let finalText=''; let interim='';
         for(let i=event.resultIndex;i<event.results.length;i++){

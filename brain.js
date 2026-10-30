@@ -29,7 +29,7 @@ export async function localIntent(text,context={}){
 }
 
 function findRelevantHistory(query,currentChatId=''){
- const recall=/tu te rappelles|tu te souviens|on avait parl|on avait dit|on en était|reprends|ressors|comme (?:la )?dernière fois|la dernière fois|hier|celui dont (?:on|je) t'avais parlé/i.test(query);
+ const recall=/tu te rappelles|tu te souviens|tu m'avais dit|tu m'avais conseillé|tu me disais|on avait parl|on avait discut|on avait dit|on en était|reprends|ressors|comme (?:la )?dernière fois|la dernière fois|hier|celui dont (?:on|je) t'avais parlé/i.test(query);
  if(!recall)return '';
  const stop=new Set(['avec','dans','pour','cette','cela','ceux','celle','dont','nous','vous','avait','avais','parle','parler','hier','alors','quoi','quel','quelle','quels','quelles','derniere','fois','rappelles','souviens','reprends','ressors','mavais','javais','avait','peux','peut','estce','comme','chez','mais','plus','meme','fait','faire']);
  const normalize=s=>String(s||'').toLocaleLowerCase('fr').normalize('NFD').replace(/[\u0300-\u036f]/g,'');

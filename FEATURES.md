@@ -3,7 +3,7 @@
 | Domaine | État | Notes |
 |---|---|---|
 | UI GENIS | ✅ | interface sombre responsive |
-| Onde réactive | 🧩 | Canvas et niveau du microphone ; animation d'état pendant la synthèse vocale, sans capture réelle du flux audio de sortie |
+| Onde réactive | 🧩 | Canvas et niveau du microphone ; animation d'état pendant la synthèse vocale, sans capture réelle du flux audio de sortie ; mode statique si reduced-motion est activé |
 | Microphone | ✅ | Web Speech API selon navigateur et autorisation |
 | Synthèse vocale | ✅ | SpeechSynthesis native, sélection parmi les voix françaises installées sur l'appareil |
 | Texte et conversation | ✅ | contexte partagé voix/texte |

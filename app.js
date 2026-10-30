@@ -32,7 +32,7 @@ async function enableMic(){
  }catch{micStream?.getTracks().forEach(t=>t.stop());micStream=null;if(audioCtx&&audioCtx.state!=='closed')audioCtx.close().catch(()=>{});audioCtx=null;waveform.attachAnalyser(null);toast('Le microphone est bloqué. Vérifiez l’autorisation du navigateur.');}
 }
 function disableMic(){voice.stop();micStream?.getTracks().forEach(t=>t.stop());micStream=null;waveform.attachAnalyser(null);waveform.setLevel(.04);if(audioCtx&&audioCtx.state!=='closed')audioCtx.close().catch(()=>{});audioCtx=null;settings.micEnabled=false;storage.settings=settings;els.micButton.setAttribute('aria-pressed','false');els.micHint.textContent='Micro désactivé';setVisualState('idle');}
-function handleTranscript({finalText,interimText}){if(interimText){els.stateDetail.textContent=interimText;waveform.setLevel(Math.min(1,0.15+interimText.length/80));}if(finalText){els.input.value=finalText;isProcessingVoice=true;sendPrompt(finalText,true).finally(()=>{isProcessingVoice=false;});}}
+function handleTranscript({finalText,interimText}){if(isProcessingVoice)return;if(interimText){els.stateDetail.textContent=interimText;waveform.setLevel(Math.min(1,0.15+interimText.length/80));}if(finalText){els.input.value=finalText;isProcessingVoice=true;voice.stop();sendPrompt(finalText,true).finally(()=>{isProcessingVoice=false;});}}
 
 async function extractAttachment(file){
  const name=file.name.toLowerCase(),limit=120000;
