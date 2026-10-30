@@ -45,10 +45,10 @@ async function extractAttachment(file){
   return out.slice(0,limit)||'Aucun texte extractible dans ce PDF.';
  }
  if(/\.docx$/i.test(name)){
-  const mammoth=await import('https://esm.sh/mammoth@1.9.0');const result=await mammoth.extractRawText({arrayBuffer:await file.arrayBuffer()});return String(result.value||'').slice(0,limit);
+  const mammothModule=await import('https://esm.sh/mammoth@1.9.0');const mammoth=mammothModule.default||mammothModule;const result=await mammoth.extractRawText({arrayBuffer:await file.arrayBuffer()});return String(result.value||'').slice(0,limit);
  }
  if(/\.(xlsx|xls)$/i.test(name)){
-  const XLSX=await import('https://esm.sh/xlsx@0.18.5');const book=XLSX.read(await file.arrayBuffer(),{type:'array'});return book.SheetNames.map(sheet=>'[Feuille : '+sheet+']\n'+XLSX.utils.sheet_to_csv(book.Sheets[sheet])).join('\n\n').slice(0,limit);
+  const XLSXModule=await import('https://esm.sh/xlsx@0.18.5');const XLSX=XLSXModule.default||XLSXModule;const book=XLSX.read(await file.arrayBuffer(),{type:'array'});return book.SheetNames.map(sheet=>'[Feuille : '+sheet+']\n'+XLSX.utils.sheet_to_csv(book.Sheets[sheet])).join('\n\n').slice(0,limit);
  }
  if(/\.pptx$/i.test(name)){
   const JSZip=(await import('https://esm.sh/jszip@3.10.1')).default;const zip=await JSZip.loadAsync(await file.arrayBuffer());const slides=Object.keys(zip.files).filter(x=>/^ppt\/slides\/slide\d+\.xml$/.test(x)).sort((x,y)=>Number(x.match(/slide(\d+)/)[1])-Number(y.match(/slide(\d+)/)[1]));let out='';
@@ -56,7 +56,7 @@ async function extractAttachment(file){
   return out.slice(0,limit)||'Aucun texte extractible dans cette présentation.';
  }
  if(/^image\//.test(file.type)||/\.(png|jpe?g|webp|bmp)$/i.test(name)){
-  const Tesseract=await import('https://esm.sh/tesseract.js@5.1.1');const worker=await Tesseract.createWorker('fra+eng');try{const result=await worker.recognize(file);return ('[Texte extrait par OCR]\n'+(result.data.text||'Aucun texte détecté.')).slice(0,limit);}finally{await worker.terminate();}
+  const Tesseract=await import('https://esm.sh/tesseract.js@5.1.1');const createWorker=Tesseract.createWorker||Tesseract.default?.createWorker;if(!createWorker)throw new Error('Moteur OCR indisponible.');const worker=await createWorker('fra+eng');try{const result=await worker.recognize(file);return ('[Texte extrait par OCR]\n'+(result.data.text||'Aucun texte détecté.')).slice(0,limit);}finally{await worker.terminate();}
  }
  throw new Error('Format non pris en charge. Formats acceptés : TXT, MD, CSV, JSON, HTML, XML, code, PDF, DOCX, XLSX, XLS, PPTX et images.');
 }
