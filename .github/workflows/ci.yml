@@ -56,6 +56,7 @@ jobs:
           assert.ok(app.includes('voiceName:settings.voiceName'), 'Selected voice is not connected to speech output');
           assert.ok(app.includes('function buildAttachmentContext'), 'Attachment context size guard is missing');
           assert.ok(app.includes('activeChat.id'), 'Current chat id is not passed to history recall');
+          assert.ok(app.includes('data-edit-auto-trigger') && app.includes('data-add-auto-action') && app.includes('data-remove-auto-action'), 'Automation edit and multi-action controls are missing');
           assert.ok(css.includes('grid-area:1 / 1'), 'Responsive conversation overlay must stay inside the workspace grid');
           assert.ok(workerSource.includes('readLimitedBody') && workerSource.includes('MAX_REQUEST_BYTES'), 'Gateway request size guard is missing');
           assert.ok(sw.includes("const CACHE='genis-v8';"), 'Service worker cache must be bumped when the app shell changes');
