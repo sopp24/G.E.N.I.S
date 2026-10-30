@@ -22,8 +22,6 @@ GENIS/
 ├── manifest.webmanifest
 ├── sw.js
 ├── robots.txt
-├── .nojekyll
-├── .gitignore
 ├── worker.js
 ├── brain.js
 ├── storage.js
@@ -32,8 +30,7 @@ GENIS/
 ├── tools.js
 ├── index.js
 ├── genis-192.png
-├── genis-512.png
-└── .github/workflows/deploy.yml
+└── genis-512.png
 ```
 
 ## Ce qui fonctionne dans cette première version
@@ -44,7 +41,8 @@ GENIS/
 - Synthèse vocale via SpeechSynthesis.
 - Conversation texte et voix partagée.
 - Historique local des conversations.
-- Mémoire locale visible/modifiable/supprimable.
+- Mémoire locale consultable, modifiable et supprimable.
+- Lecture de fichiers texte (TXT, Markdown, CSV, JSON, HTML, XML et LOG) avec une limite de 2 Mo par fichier ; les PDF et documents Office ne sont pas encore extraits.
 - Minuteurs locaux.
 - Météo via Open-Meteo, avec géolocalisation facultative.
 - Ouverture préparée des services courants (Deezer, YouTube, Gmail, Agenda, SNCF, Vinted, etc.) sans prétendre contrôler les comptes.
@@ -76,11 +74,10 @@ La PWA, le microphone et la synthèse vocale doivent être testés dans un conte
 
 ## GitHub Pages
 
-1. Créez un dépôt GitHub.
-2. Copiez le contenu de ce dossier dans la racine du dépôt.
-3. Poussez la branche `main`.
-4. Dans **Settings → Pages**, choisissez **GitHub Actions**.
-5. Le workflow `.github/workflows/deploy.yml` publie automatiquement les fichiers statiques.
+1. Déposez tous les fichiers directement à la racine du dépôt (les modules et les icônes sont prévus sans sous-dossier).
+2. Dans **Settings → Pages**, choisissez **Deploy from a branch**.
+3. Sélectionnez la branche `main` et le dossier `/ (root)`, puis enregistrez.
+4. GitHub Pages génère et exécute automatiquement son workflow `pages build and deployment` à chaque mise à jour de la branche.
 
 La page GitHub est publique dès qu'elle est publiée ; ne placez donc aucun secret, mot de passe ou fichier privé dans le dépôt.
 
@@ -91,8 +88,8 @@ Le navigateur ne reçoit jamais la clé Anthropic. Le fichier `worker.js` est de
 Variables/secrets à créer dans Cloudflare :
 
 - `ANTHROPIC_API_KEY` — **Secret**, obligatoire.
-- `APP_SECRET` — **Secret**, facultatif mais conseillé pour filtrer les appels de la passerelle.
-- `ALLOWED_ORIGIN` — variable, par exemple `https://votre-compte.github.io`.
+- `APP_SECRET` — **Secret obligatoire**, défini dans les réglages Cloudflare.
+- `ALLOWED_ORIGIN` — variable obligatoire contenant l’origine exacte du frontend, sans chemin (pour ce dépôt : `https://sopp24.github.io`). Plusieurs origines peuvent être séparées par des virgules, par exemple pour ajouter `http://localhost:8080` en développement.
 
 Après déploiement du Worker :
 
@@ -100,7 +97,7 @@ Après déploiement du Worker :
 
 Puis enregistrer et utiliser **Tester la connexion**.
 
-> Le secret `APP_SECRET` est un filtre applicatif, pas une protection cryptographique absolue. La vraie protection du compte reste la gestion des secrets, le contrôle d'accès et les limites de dépense côté fournisseur.
+> `APP_SECRET` constitue une barrière supplémentaire, pas un système d’authentification utilisateur complet. Il est saisi dans le navigateur pour cet usage personnel : ne le partagez pas et ne considérez pas le stockage local comme un coffre-fort.
 
 ## Variables d'environnement
 
