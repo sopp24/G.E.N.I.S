@@ -1,0 +1,29 @@
+name: GENIS quality checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: JavaScript syntax
+        run: npm test
+      - name: PWA manifest
+        run: node -e "const m=JSON.parse(require('fs').readFileSync('manifest.webmanifest','utf8')); if(!m.name || !m.icons?.some(i=>i.sizes==='192x192') || !m.icons?.some(i=>i.sizes==='512x512')) process.exit(1)"
+      - name: Frontend assets
+        run: |
+          for f in index.html styles.css app.js brain.js storage.js voice.js waveform.js tools.js index.js manifest.webmanifest sw.js genis-192.png genis-512.png; do
+            test -s "$f" || { echo "Missing or empty asset: $f"; exit 1; }
+          done

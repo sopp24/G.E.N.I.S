@@ -1,52 +1,36 @@
 # Architecture GENIS
 
 ## Flux principal
-
 ```text
 Utilisateur
-   ↓ voix / texte
+   ↓ voix / texte / pièces jointes
 UI GENIS
    ↓
 Intent local
-   ├── outils locaux (minuteur, météo, mémoire, recherche)
-   ├── connecteurs (Google, Deezer, SNCF, etc.)
+   ├── mémoire, minuteur, rappels, ouverture de services
+   ├── extraction locale des fichiers (PDF/Office/OCR)
    └── passerelle IA
           ↓
        Cloudflare Worker
           ↓
-       fournisseur IA
+       Anthropic ou OpenAI
+          ↓ appels d'outils limités
+       Heure / calcul / Open-Meteo / Wikipédia
 ```
 
 ## Principes
-
-- Les connecteurs sont indépendants.
-- Le navigateur ne reçoit pas de clé API fournisseur.
-- La mémoire reste locale dans cette version.
-- Toute capacité externe doit exposer son niveau de risque et ses permissions.
-- Une action réussie doit être vérifiée auprès du service réel avant de produire une confirmation.
-- Le moteur d'intention peut évoluer vers un orchestrateur LLM + outils structurés sans réécrire l'interface.
+- Frontend statique à la racine, hébergé par GitHub Pages.
+- Secrets fournisseurs conservés uniquement dans Cloudflare.
+- Outils côté Worker en liste blanche, validation côté serveur et boucle plafonnée à cinq étapes.
+- Aucune action sur compte, achat, paiement, réservation, message ou appareil n'est exposée au modèle.
+- Historique, mémoire, tâches et automatisations restent locaux.
+- Le texte extrait des fichiers n'est envoyé au fournisseur qu'après envoi explicite de la demande.
+- Les connecteurs tiers doivent utiliser API officielle et OAuth.
 
 ## Extension future
-
-Chaque connecteur peut être refactoré vers :
-
-```js
-{
-  id,
-  capabilities,
-  permissions,
-  auth,
-  actions,
-  execute(),
-  verify(),
-  errors
-}
-```
-
-Le prochain palier est d'ajouter un registre de compétences et un moteur de plan :
-
+Un connecteur métier devra décrire ses capacités, permissions, authentification, actions, niveau de risque, méthode d'exécution et méthode de vérification. Le futur flux d'action doit rester :
 ```text
-intention → plan JSON → policy check → confirmation → tool execution → verify → result
+intention → plan structuré → politique de permissions → confirmation
+→ exécution connecteur → vérification fournisseur → résultat utilisateur
 ```
-
-Le plan doit rester séparé du texte de réponse afin d'éviter qu'un modèle puisse déclencher directement une action sensible sans passage par la politique de sécurité.
+Les actions sensibles doivent être contrôlées côté serveur et ne jamais être déclenchées par une simple réponse textuelle du modèle.

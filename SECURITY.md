@@ -1,44 +1,34 @@
 # Sécurité GENIS
 
-## Règle de base
-
-GENIS sépare l'intention de l'exécution. Une réponse textuelle ne constitue jamais la preuve qu'une action externe a été réalisée.
+## Principe
+Une réponse textuelle ne prouve jamais qu'une action externe a été réalisée. Les outils actuellement exposés au modèle sont strictement limités à l'heure, au calcul, à la météo et à la recherche Wikipédia.
 
 ## Niveaux de risque
-
-| Niveau | Exemple | Comportement cible |
+| Niveau | Exemple | Politique |
 |---|---|---|
-| Lecture | météo, agenda, recherche | exécution directe |
-| Préparation | brouillon de mail, panier, réservation | préparation puis validation selon réglages |
-| Action | envoyer, réserver, modifier | confirmation selon politique |
-| Sensible | paiement, virement, suppression définitive, domotique critique | authentification forte + confirmation |
+| Lecture | heure, météo, encyclopédie | exécution directe |
+| Préparation | brouillon de mail, panier, réservation | connecteur officiel requis |
+| Action | envoyer, réserver, modifier | confirmation et vérification du service |
+| Sensible | paiement, virement, suppression, domotique critique | authentification forte + confirmation |
 
 ## Secrets
-
 - Ne jamais committer une clé API.
-- Les secrets fournisseurs vont dans les secrets du fournisseur d'hébergement backend.
-- Pour Cloudflare Worker : `APP_SECRET` et la clé du fournisseur sélectionné (`ANTHROPIC_API_KEY` ou `OPENAI_API_KEY`) sont des Secrets obligatoires. `AI_PROVIDER` indique `anthropic` ou `openai`.
-- `ALLOWED_ORIGIN` doit contenir une ou plusieurs origines exactes autorisées (sans chemin). Le Worker refuse les origines absentes ou non autorisées et n'accepte jamais `*`.
-- Le secret partagé saisi dans GENIS reste stocké dans le `localStorage` de ce navigateur : il n'est pas un coffre-fort et ne doit pas être partagé. L'export JSON l'exclut volontairement.
-- La mémoire reste stockée dans le navigateur. Les souvenirs sélectionnés par GENIS sont ajoutés au contexte des demandes envoyées au fournisseur IA ; ne mémorisez pas d’informations que vous ne souhaitez pas transmettre à ce fournisseur.
-- Ne jamais demander à un modèle de langage de transmettre ou d'afficher un token.
-- Le frontend ne doit pas être considéré comme un coffre-fort à secrets.
+- Cloudflare Worker : secret `APP_SECRET` et clé fournisseur `ANTHROPIC_API_KEY` ou `OPENAI_API_KEY`.
+- `AI_PROVIDER` doit correspondre au fournisseur configuré.
+- `ALLOWED_ORIGIN` contient les origines exactes autorisées, jamais `*`.
+- Le secret partagé saisi dans GENIS est stocké dans le localStorage : ce n'est pas un coffre-fort.
+- Les souvenirs choisis sont transmis au fournisseur IA avec les requêtes.
+- Les clés fournisseur ne sont jamais envoyées au navigateur.
+- Le Worker n'expose aucune fonction de paiement, virement, achat, réservation, messagerie, agenda, compte ou domotique.
 
 ## Données locales
-
-La mémoire et l'historique du prototype sont stockés dans le `localStorage` du navigateur. Cela permet une autonomie simple mais n'offre pas les propriétés d'un coffre-fort. Pour une mémoire cloud, passer à une base sécurisée et chiffrée côté serveur avec authentification utilisateur.
-
-## Actions sensibles
-
-La version livrée ne réalise aucun paiement ni virement. Toute intégration bancaire ou domotique doit introduire une politique serveur, une confirmation explicite et les mécanismes d'authentification natifs du service concerné avant activation.
+Historique, souvenirs, tâches et automatisations sont conservés dans le localStorage du navigateur. Ils ne sont pas synchronisés entre appareils et ne sont pas chiffrés comme dans un coffre-fort.
 
 ## Fichiers
+L'accès exige la permission Fichiers. GENIS extrait localement TXT/MD/CSV/JSON/code, PDF, DOCX, XLSX/XLS, PPTX et images via OCR français/anglais. Les bibliothèques sont chargées depuis des CDN lors de leur première utilisation. Les fichiers ne sont pas envoyés automatiquement : seul le texte extrait est transmis au fournisseur après envoi explicite de la demande. GENIS ne modifie ni ne supprime les fichiers.
 
-L’accès aux fichiers est soumis à la permission **Fichiers**. Cette version permet uniquement de lire certains formats texte (TXT, Markdown, CSV, JSON, HTML, XML et LOG) ; elle ne modifie ni ne supprime aucun fichier local. Toute extension future devra distinguer lecture, modification et suppression, cette dernière étant toujours une action sensible.
-## Autorisation et fichiers locaux
+## Microphone et notifications
+Le microphone nécessite l'autorisation GENIS et celle du navigateur. Il est désactivé au démarrage. Les notifications nécessitent l'autorisation GENIS et celle du navigateur. Les rappels locaux ne sont pas garantis si le navigateur suspend ou ferme l'application.
 
-- La géolocalisation n'est sollicitée que si l'autorisation **Localisation** a été activée dans GENIS. Une ville par défaut peut aussi être définie dans les réglages.
-- L'accès au microphone est contrôlé par la permission GENIS et par la permission du navigateur. Le microphone est désactivé au chargement de chaque nouvelle session ; l'utilisateur doit le réactiver explicitement.
-- La lecture de fichiers exige l’activation de la permission **Fichiers** dans GENIS. Les fichiers texte pris en charge sont lus localement et transmis à la passerelle IA uniquement lorsque l’utilisateur envoie une demande. Les formats binaires (PDF, DOCX, images, etc.) ne sont pas extraits dans cette version.
-- Les notifications système nécessitent à la fois la permission **Notifications** dans GENIS et l’autorisation du navigateur. Désactiver la permission dans GENIS empêche l’envoi de notifications système même si le navigateur reste autorisé.
-- La réinitialisation supprime uniquement les clés `genis:` dans le stockage local et ne vide pas les données des autres applications partageant la même origine.
+## Géolocalisation
+La géolocalisation est sollicitée uniquement si la permission GENIS est activée. Une ville par défaut peut être définie dans les réglages.
