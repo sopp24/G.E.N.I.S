@@ -41,22 +41,22 @@ async function extractAttachment(file){
   const pdfjs=await import('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs');
   pdfjs.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.mjs';
   const pdf=await pdfjs.getDocument({data:new Uint8Array(await file.arrayBuffer())}).promise;let out='';
-  for(let n=1;n<=Math.min(pdf.numPages,80)&&out.length<limit;n++){const page=await pdf.getPage(n),content=await page.getTextContent();out+='\\n[Page '+n+']\\n'+content.items.map(x=>x.str||'').join(' ');}
+  for(let n=1;n<=Math.min(pdf.numPages,80)&&out.length<limit;n++){const page=await pdf.getPage(n),content=await page.getTextContent();out+='\n[Page '+n+']\n'+content.items.map(x=>x.str||'').join(' ');}
   return out.slice(0,limit)||'Aucun texte extractible dans ce PDF.';
  }
  if(/\.docx$/i.test(name)){
   const mammoth=await import('https://esm.sh/mammoth@1.9.0');const result=await mammoth.extractRawText({arrayBuffer:await file.arrayBuffer()});return String(result.value||'').slice(0,limit);
  }
  if(/\.(xlsx|xls)$/i.test(name)){
-  const XLSX=await import('https://esm.sh/xlsx@0.18.5');const book=XLSX.read(await file.arrayBuffer(),{type:'array'});return book.SheetNames.map(sheet=>'[Feuille : '+sheet+']\\n'+XLSX.utils.sheet_to_csv(book.Sheets[sheet])).join('\\n\\n').slice(0,limit);
+  const XLSX=await import('https://esm.sh/xlsx@0.18.5');const book=XLSX.read(await file.arrayBuffer(),{type:'array'});return book.SheetNames.map(sheet=>'[Feuille : '+sheet+']\n'+XLSX.utils.sheet_to_csv(book.Sheets[sheet])).join('\n\n').slice(0,limit);
  }
  if(/\.pptx$/i.test(name)){
   const JSZip=(await import('https://esm.sh/jszip@3.10.1')).default;const zip=await JSZip.loadAsync(await file.arrayBuffer());const slides=Object.keys(zip.files).filter(x=>/^ppt\/slides\/slide\d+\.xml$/.test(x)).sort((x,y)=>Number(x.match(/slide(\d+)/)[1])-Number(y.match(/slide(\d+)/)[1]));let out='';
-  for(const path of slides){const xml=await zip.file(path).async('text');const doc=new DOMParser().parseFromString(xml,'application/xml');out+='\\n['+path.split('/').pop()+']\\n'+[...doc.getElementsByTagName('a:t')].map(n=>n.textContent).join(' ');}
+  for(const path of slides){const xml=await zip.file(path).async('text');const doc=new DOMParser().parseFromString(xml,'application/xml');out+='\n['+path.split('/').pop()+']\n'+[...doc.getElementsByTagName('a:t')].map(n=>n.textContent).join(' ');}
   return out.slice(0,limit)||'Aucun texte extractible dans cette présentation.';
  }
  if(/^image\//.test(file.type)||/\.(png|jpe?g|webp|bmp)$/i.test(name)){
-  const Tesseract=await import('https://esm.sh/tesseract.js@5.1.1');const worker=await Tesseract.createWorker('fra+eng');try{const result=await worker.recognize(file);return ('[Texte extrait par OCR]\\n'+(result.data.text||'Aucun texte détecté.')).slice(0,limit);}finally{await worker.terminate();}
+  const Tesseract=await import('https://esm.sh/tesseract.js@5.1.1');const worker=await Tesseract.createWorker('fra+eng');try{const result=await worker.recognize(file);return ('[Texte extrait par OCR]\n'+(result.data.text||'Aucun texte détecté.')).slice(0,limit);}finally{await worker.terminate();}
  }
  throw new Error('Format non pris en charge. Formats acceptés : TXT, MD, CSV, JSON, HTML, XML, code, PDF, DOCX, XLSX, XLS, PPTX et images.');
 }
