@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-P+xlLqH8ZfWs8ffL3gEgCMopdZe8kfXLURcgN+KnpRg=' 'wasm-unsafe-eval' https://cdnjs.cloudflare.com https://esm.sh https://cdn.jsdelivr.net blob:; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; media-src 'self' blob: https:; font-src 'self' data:; connect-src 'self' https: http://localhost:* http://127.0.0.1:* data: blob:; frame-src https:; worker-src 'self' blob: https:; object-src 'none'; base-uri 'none'; form-action 'self'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#050607">
+<meta name="description" content="G.E.N.I.S : l'assistant personnel qui fait les choses à votre place. Je demande, G.E.N.I.S s'en occupe.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="G.E.N.I.S">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>G.E.N.I.S</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="styles.css">
+<link rel="modulepreload" href="app.js"><link rel="modulepreload" href="ui.js"><link rel="modulepreload" href="panels.js"><link rel="modulepreload" href="brain.js"><link rel="modulepreload" href="executor.js"><link rel="modulepreload" href="connectors.js"><link rel="modulepreload" href="memory.js"><link rel="modulepreload" href="storage.js"><link rel="modulepreload" href="util.js"><link rel="modulepreload" href="spaces.js"><link rel="modulepreload" href="waveform.js">
+</head>
+<body>
+<svg class="sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></symbol><symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></symbol><symbol id="i-dots" viewBox="0 0 24 24"><circle cx="6" cy="6" r="1.6"/><circle cx="12" cy="6" r="1.6"/><circle cx="18" cy="6" r="1.6"/><circle cx="6" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18" cy="12" r="1.6"/><circle cx="6" cy="18" r="1.6"/><circle cx="12" cy="18" r="1.6"/><circle cx="18" cy="18" r="1.6"/></symbol><symbol id="i-tiles" viewBox="0 0 24 24"><rect x="3" y="4" width="8" height="7" rx="1.5"/><rect x="13" y="4" width="8" height="7" rx="1.5"/><rect x="3" y="13" width="8" height="7" rx="1.5"/><rect x="13" y="13" width="8" height="7" rx="1.5"/></symbol><symbol id="i-layers" viewBox="0 0 24 24"><path d="M12 3l9 5-9 5-9-5 9-5z"/><path d="M3 13l9 5 9-5"/></symbol><symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/></symbol><symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21a2 2 0 0 0 4 0"/></symbol><symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></symbol><symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></symbol><symbol id="i-mic-off" viewBox="0 0 24 24"><path d="M3 3l18 18"/><path d="M9 9v2a3 3 0 0 0 5 2.2M15 9.3V6a3 3 0 0 0-5.7-1.3"/><path d="M5 11a7 7 0 0 0 11 5.7M19 11a7 7 0 0 1-.6 2.8M12 18v3"/></symbol><symbol id="i-send" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol><symbol id="i-clip" viewBox="0 0 24 24"><path d="M20 11l-8.5 8.5a5 5 0 0 1-7-7L13 4a3.5 3.5 0 0 1 5 5l-8.5 8.5a2 2 0 0 1-3-3L14 7"/></symbol><symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol><symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol><symbol id="i-check" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></symbol><symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z"/></symbol><symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></symbol><symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></symbol><symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M13 7l4 4"/></symbol><symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4l13 8-13 8V4z"/></symbol><symbol id="i-pause" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></symbol><symbol id="i-stop" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/></symbol><symbol id="i-music" viewBox="0 0 24 24"><path d="M9 18V6l11-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/></symbol><symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol><symbol id="i-cloud" viewBox="0 0 24 24"><path d="M7 18a4 4 0 0 1 0-8 5.5 5.5 0 0 1 10.7 1.5A3.3 3.3 0 0 1 17 18H7z"/></symbol><symbol id="i-map" viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></symbol><symbol id="i-plane" viewBox="0 0 24 24"><path d="M21 3L3 11l7 2 2 7 9-17z"/></symbol><symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></symbol><symbol id="i-bag" viewBox="0 0 24 24"><path d="M5 8h14l-1 12H6L5 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></symbol><symbol id="i-fork" viewBox="0 0 24 24"><path d="M7 3v8M5 3v5a2 2 0 0 0 4 0V3M7 11v10M17 3c-2 2-2.5 5-2.5 8h2.5v10"/></symbol><symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 6a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6z"/></symbol><symbol id="i-book" viewBox="0 0 24 24"><path d="M5 4h10a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3V4z"/><path d="M5 17a3 3 0 0 1 3-3h10"/></symbol><symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></symbol><symbol id="i-bank" viewBox="0 0 24 24"><path d="M3 10l9-6 9 6M5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 20h18"/></symbol><symbol id="i-car" viewBox="0 0 24 24"><path d="M5 16V11l2-5h10l2 5v5M3 16h18M7 16v3M17 16v3"/><circle cx="8" cy="13.5" r="1"/><circle cx="16" cy="13.5" r="1"/></symbol><symbol id="i-train" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="14" rx="3"/><path d="M5 11h14M9 21l2-4M15 21l-2-4"/></symbol><symbol id="i-doc" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6V3z"/><path d="M14 3v4h4M9 12h6M9 16h6"/></symbol><symbol id="i-school" viewBox="0 0 24 24"><path d="M3 9l9-5 9 5-9 5-9-5z"/><path d="M7 11v5c2 2 8 2 10 0v-5"/></symbol><symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3z"/></symbol><symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4-4"/></symbol><symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol><symbol id="i-chevron" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></symbol><symbol id="i-chevron-left" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></symbol><symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h8"/></symbol><symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11M7 11l5 5 5-5M5 20h14"/></symbol><symbol id="i-external" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></symbol><symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3l10 17H2L12 3z"/><path d="M12 10v4M12 17h0"/></symbol><symbol id="i-key" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M16 7l3 3"/></symbol><symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14-4M4 4v4h4M4 13a8 8 0 0 0 14 4M20 20v-4h-4"/></symbol><symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h0"/></symbol><symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 17v5M8 3h8l-1 7 3 3H6l3-3-1-7z"/></symbol><symbol id="i-link" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></symbol></svg>
+<a class="skip" href="#prompt">Aller à la saisie</a>
+<div id="app" class="app" data-state="idle" data-mic="off" data-thread="closed" data-panel="">
+  <header class="topbar">
+    <div class="brand" role="img" aria-label="G.E.N.I.S"><span class="mark" aria-hidden="true"></span><b>G<i>.</i>E<i>.</i>N<i>.</i>I<i>.</i>S</b></div>
+    <nav id="spaceTabs" class="tabs" aria-label="Espaces de travail"></nav>
+    <button id="overviewBtn" type="button" class="icon-btn" aria-label="Vue d’ensemble des espaces" title="Espaces (Ctrl+K)"><svg class="i" aria-hidden="true"><use href="#i-tiles"/></svg></button>
+    <div class="status">
+      <button id="gwChip" type="button" class="chip-btn" data-state="off"><i class="dot"></i>IA non configurée</button>
+      <button id="micChip" type="button" class="chip-btn" data-on="false"><i class="dot"></i>Micro coupé</button>
+      <time id="clock" class="clock"></time>
+    </div>
+  </header>
+  <main id="stage" class="stage">
+    <section class="hero" aria-label="G.E.N.I.S">
+      <canvas id="wave" role="img" aria-label="G.E.N.I.S : en veille, micro coupé"></canvas>
+      <div class="hero-text">
+        <p id="stateLabel" class="state-label" aria-live="polite">En veille</p>
+        <p id="caption" class="caption" aria-live="polite"></p>
+        <ol id="rail" class="rail" aria-live="polite" data-show="0"></ol>
+        <div id="chips" class="chips" hidden></div>
+      </div>
+      <button id="micBtn" type="button" class="mic-btn" aria-pressed="false" aria-label="Activer le microphone"><svg class="i" aria-hidden="true"><use href="#i-mic-off"/></svg></button>
+    </section>
+    <section id="thread" class="thread" aria-label="Conversation">
+      <header><h2 id="threadTitle">Accueil</h2><div>
+        <button id="historyBtn" type="button" class="icon-btn" aria-label="Historique des conversations" title="Historique"><svg class="i" aria-hidden="true"><use href="#i-clock"/></svg></button>
+        <button id="newSpaceBtn" type="button" class="icon-btn" aria-label="Nouvelle conversation" title="Nouvelle conversation"><svg class="i" aria-hidden="true"><use href="#i-plus"/></svg></button>
+        <button id="threadClose" type="button" class="icon-btn" aria-label="Fermer la conversation"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg></button></div></header>
+      <div id="log" class="log" role="log" aria-live="polite" tabindex="0"></div>
+    </section>
+  </main>
+  <form id="composer" class="composer" autocomplete="off">
+    <div id="attachments" class="attachments" hidden></div>
+    <div class="composer-row">
+      <button type="button" id="attachBtn" class="icon-btn" aria-label="Joindre un fichier" title="Joindre un fichier"><svg class="i" aria-hidden="true"><use href="#i-clip"/></svg></button>
+      <input type="file" id="fileInput" hidden multiple accept=".txt,.md,.csv,.tsv,.json,.html,.htm,.xml,.pdf,.docx,.xlsx,.xls,.pptx,image/*">
+      <textarea id="prompt" rows="1" placeholder="Dites ou écrivez ce que vous voulez faire…" aria-label="Votre demande" enterkeyhint="send"></textarea>
+      <button type="submit" id="sendBtn" class="send-btn" data-mode="send" aria-label="Envoyer" disabled><svg class="i" aria-hidden="true"><use href="#i-send"/></svg></button>
+    </div>
+  </form>
+  <nav id="dock" class="dock" aria-label="Dock"></nav>
+  <aside id="drawer" class="drawer" role="dialog" aria-labelledby="drawerTitle" hidden>
+    <header><h2 id="drawerTitle"></h2><button id="drawerClose" type="button" class="icon-btn" aria-label="Fermer le panneau"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg></button></header>
+    <div id="drawerBody" class="drawer-body"></div>
+  </aside>
+  <section id="overview" class="overview" hidden aria-label="Espaces de travail">
+    <header><h2>Espaces</h2><button id="overviewClose" type="button" class="icon-btn" aria-label="Fermer la vue d’ensemble"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg></button></header>
+    <div id="overviewGrid" class="overview-grid"></div>
+  </section>
+  <aside id="media" class="media" hidden aria-label="Lecteur Deezer">
+    <header><b id="mediaTitle"></b><button id="mediaToggle" type="button" class="icon-btn" aria-label="Réduire le lecteur"><svg class="i" aria-hidden="true"><use href="#i-chevron-left"/></svg></button><button id="mediaClose" type="button" class="icon-btn" aria-label="Fermer le lecteur"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg></button></header>
+    <iframe id="mediaFrame" title="Lecteur Deezer" allow="autoplay; encrypted-media; clipboard-write" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" height="200"></iframe>
+  </aside>
+  <div id="toasts" class="toasts" aria-live="polite"></div>
+  <div id="modals"></div>
+  <p id="boot-error" class="boot-error" hidden>G.E.N.I.S n’a pas pu démarrer. Rechargez la page ; si le problème persiste, ouvrez la console du navigateur.</p>
+</div>
+<noscript><p style="padding:2rem;color:#fff">G.E.N.I.S nécessite JavaScript.</p></noscript>
+<script type="module" src="app.js"></script>
+<a style="display:none!important" aria-hidden="true" tabindex="-1" class="sopp-home-float" href="https://sopp24.github.io/SOPP-agents/" aria-label="Retour à l’accueil de SOPP Agents" title="Retour à SOPP Agents"><img src="https://sopp24.github.io/SOPP-agents/assets/brand-mark.webp" alt="" aria-hidden="true"></a>
+<script>
+(() => {
+  const button = document.querySelector(".sopp-home-float");
+  if (!button) return;
+
+  // The shortcut is enabled only on links explicitly opened from SOPP Agents.
+  const openedFromLibrary =
+    new URLSearchParams(window.location.search).get("from") === "sopp-agents";
+
+  if (!openedFromLibrary) return;
+
+  button.style.setProperty("display", "grid", "important");
+  button.setAttribute("aria-hidden", "false");
+  button.removeAttribute("tabindex");
+})();
+</script>
+</body>
+</html>

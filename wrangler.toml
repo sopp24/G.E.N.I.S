@@ -1,0 +1,27 @@
+# Passerelle G.E.N.I.S (Cloudflare Worker). Aucun secret ici : ils se déclarent avec `npx wrangler secret put NOM`.
+name = "genis-gateway"
+main = "worker.js"
+compatibility_date = "2026-11-01"
+workers_dev = true
+
+[vars]
+# Origine(s) autorisée(s) à appeler la passerelle (CORS), séparées par des virgules. Pas de chemin, pas de « / » final.
+ALLOWED_ORIGIN = "https://sopp24.github.io"
+# Fournisseur d'IA préféré : anthropic | openai | gemini (le premier configuré est utilisé sinon).
+AI_PROVIDER = "anthropic"
+# Identifiants PUBLICS (pas des secrets) — décommentez selon vos besoins :
+# GOOGLE_CLIENT_ID = "xxxxxxxx.apps.googleusercontent.com"
+# ELEVENLABS_VOICE_ID = "..."
+# OPENAI_TTS_VOICE = "coral"
+# TTS_PROVIDER = "openai"          # ou "elevenlabs"
+
+# Stockage des jetons OAuth (Google). Créer : npx wrangler kv namespace create GENIS_KV, puis coller l'id ci-dessous.
+# [[kv_namespaces]]
+# binding = "GENIS_KV"
+# id = "REMPLACER_PAR_L_ID_DU_NAMESPACE"
+
+# SECRETS (à ajouter avec `npx wrangler secret put …`, jamais dans ce fichier) :
+#   APP_SECRET            obligatoire : secret partagé avec l'application (long, aléatoire)
+#   ANTHROPIC_API_KEY | OPENAI_API_KEY | GEMINI_API_KEY    au moins une clé d'IA
+#   ELEVENLABS_API_KEY    voix ElevenLabs (optionnel ; OpenAI suffit pour la voix neuronale)
+#   GOOGLE_CLIENT_SECRET, TOKEN_ENC_KEY    Agenda et Gmail (avec GOOGLE_CLIENT_ID et le KV)

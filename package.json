@@ -1,0 +1,25 @@
+{
+  "name": "genis",
+  "version": "3.0.0",
+  "description": "G.E.N.I.S : assistant personnel qui fait les choses à votre place (PWA + passerelle Cloudflare).",
+  "private": true,
+  "type": "module",
+  "license": "UNLICENSED",
+  "scripts": {
+    "check": "node check.mjs",
+    "test": "node --test test.mjs",
+    "smoke": "node smoke.mjs",
+    "verify": "npm run check && npm test && npm run smoke",
+    "serve": "npx --yes http-server . -p 8080 -c-1",
+    "worker:dev": "npx --yes wrangler dev",
+    "worker:deploy": "npx --yes wrangler deploy"
+  },
+  "engines": {
+    "node": ">=20.19"
+  },
+  "devDependencies": {
+    "acorn": "^8.19.0",
+    "fake-indexeddb": "^6.2.8",
+    "jsdom": "^31.0.0"
+  }
+}

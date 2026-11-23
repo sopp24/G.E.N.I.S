@@ -1,0 +1,77 @@
+{
+  "id": "./",
+  "name": "G.E.N.I.S",
+  "short_name": "G.E.N.I.S",
+  "description": "Gestionnaire d’Environnement Numérique Intégré et Synchronisé : l’assistant personnel qui fait les choses à votre place.",
+  "lang": "fr",
+  "dir": "ltr",
+  "start_url": "./?source=pwa",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#050607",
+  "theme_color": "#050607",
+  "categories": [
+    "productivity",
+    "utilities"
+  ],
+  "icons": [
+    {
+      "src": "genis-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "genis-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "genis-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Automatisations",
+      "short_name": "Automatisations",
+      "url": "./?panel=automations&source=shortcut",
+      "icons": [
+        {
+          "src": "genis-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Mémoire",
+      "short_name": "Mémoire",
+      "url": "./?panel=memory&source=shortcut",
+      "icons": [
+        {
+          "src": "genis-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ],
+  "share_target": {
+    "action": "./",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  }
+}
