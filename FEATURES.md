@@ -39,7 +39,7 @@
 | Erreurs compréhensibles, jamais de réussite fictive | Réel | `executor.js`, `brain.js` |
 | Responsive (ordinateur, tablette, mobile), accessibilité | Réel | `styles.css`, `ui.js` |
 | Réglages complets, PWA installable, hors ligne partiel | Réel | `panels.js`, `sw.js`, `manifest.webmanifest` |
-| Dépôt prêt pour GitHub (plat), CI, variables d'environnement, docs | Réel | ce dépôt |
+| Dépôt prêt pour GitHub (plat), vérifications locales (`npm run verify`), variables d'environnement, docs | Réel | ce dépôt |
 
 ## Non fait volontairement
 

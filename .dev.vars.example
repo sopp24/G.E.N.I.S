@@ -1,0 +1,16 @@
+# Copiez ce fichier en `.dev.vars` pour `npm run worker:dev` (le fichier .dev.vars est ignoré par Git : ne le publiez jamais).
+# Valeurs d'exemple uniquement : remplacez-les. En production, utilisez `npx wrangler secret put NOM`.
+APP_SECRET=remplacez-par-une-longue-phrase-aleatoire
+ALLOWED_ORIGIN=http://localhost:8080
+# Au moins une clé d'IA :
+# ANTHROPIC_API_KEY=
+# OPENAI_API_KEY=
+# GEMINI_API_KEY=
+# AI_PROVIDER=anthropic
+# Voix ElevenLabs (facultatif) :
+# ELEVENLABS_API_KEY=
+# ELEVENLABS_VOICE_ID=
+# Google Agenda / Gmail (facultatif ; nécessite aussi le KV GENIS_KV) :
+# GOOGLE_CLIENT_ID=
+# GOOGLE_CLIENT_SECRET=
+# TOKEN_ENC_KEY=

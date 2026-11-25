@@ -33,7 +33,7 @@
 
 ## Écosystème SOPP
 
-SOPP Agents : ouverture directe. **SOPP Language** et **Pharma SOPP** : renseignez leurs adresses dans *Réglages › Écosystème SOPP*. G.E.N.I.S les appelle comme n'importe quel outil via un pont `postMessage` ; si l'application ne répond pas, G.E.N.I.S le dit et ouvre la page avec le texte en paramètre (`?text=…&from=genis`). **Contrat à implémenter côté SOPP** (≈ 10 lignes) :
+SOPP Agents : ouverture directe. **SOPP Language** et **Pharma SOPP** : renseignez leurs adresses dans *Réglages › Écosystème SOPP*. G.E.N.I.S les appelle comme n'importe quel outil via un pont `postMessage` ; si l'application ne répond pas, G.E.N.I.S le dit et ouvre la page avec le texte en paramètre (`?text=…&source=genis`, avec `from` et `to` pour les langues). **Contrat à implémenter côté SOPP** (≈ 10 lignes) :
 
 ```js
 window.addEventListener('message', async e => {
