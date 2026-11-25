@@ -18,7 +18,7 @@ function fire(t, late = false) {
   const title = t.kind === 'alarm' ? 'Réveil' : t.kind === 'reminder' ? 'Rappel' : 'Minuteur terminé';
   notify({ title: late ? `${title} manqué` : title, body: t.label || (late ? 'Échéance dépassée pendant que G.E.N.I.S était fermé.' : ''), kind: late ? 'warn' : 'success', sound: !late });
   bus.emit('timer:fired', { ...t, late });
-  if (t.repeatDaily) addTimer({ kind: t.kind, label: t.label, dueAt: t.dueAt + 864e5, repeatDaily: true });
+  if (t.repeatDaily) { let next = t.dueAt + 864e5; while (next <= Date.now()) next += 864e5; addTimer({ kind: t.kind, label: t.label, dueAt: next, repeatDaily: true }); } // jamais dans le passé : pas de rafale de « manqués »
 }
 function sweep(initial = false) {
   const now = Date.now();

@@ -119,6 +119,7 @@ test('exécuteur : permissions, confirmations, niveau 4, arrière-plan', async (
   M.addMemory({ text: 'souvenir à oublier deux' }); r = await E.execute({ name: 'genis_memory_forget', args: { query: 'souvenir oublier deux' } }, { interactive: false });
   assert.equal(r.status, 'needs_confirmation'); assert.ok(M.listMemories().some(m => /oublier deux/.test(m.text))); assert.ok(N.listPending().length >= 1, 'en arrière-plan, l’action attend l’utilisateur');
   P.setPerm('memory.write', 'ask'); r = await E.execute({ name: 'genis_memory_remember', args: { text: 'avec permission' } }, { interactive: true }); assert.equal(c.permission, 1); assert.equal(P.permState('memory.write'), 'granted');
+  { const keep = c.permission; E.setHooks({ permission: async () => 'once' }); P.setPerm('memory.delete', 'ask'); answer = 'deny'; const before = c.confirm; r = await E.execute({ name: 'genis_memory_forget', args: { query: 'souvenir oublier' } }, { interactive: true }); assert.equal(c.confirm, before + 1, 'permission « cette fois » : la confirmation de niveau 3 reste exigée'); assert.equal(r.status, 'cancelled'); P.setPerm('memory.delete', 'granted'); E.setHooks({ permission: async () => { c.permission++; return 'always'; } }); answer = 'allow'; c.permission = keep; }
   P.setPerm('memory.write', 'denied'); r = await E.execute({ name: 'genis_memory_remember', args: { text: 'x' } }, { interactive: true }); assert.equal(r.status, 'denied'); P.setPerm('memory.write', 'granted');
   R.register({ id: 'bank_test', name: 'Banque test', status: 'ready', capabilities: { pay: { label: 'Payer', description: 'x', level: 4, permission: 'payment.make', params: { amount: { type: 'number' } }, required: ['amount'], run: async () => ({ status: 'done', verified: true, summary: 'payé (test)' }) } } });
   P.setPerm('payment.make', 'granted'); await S.configure({ passphrase: 'phrase de test assez longue', iter: 1000 });
@@ -232,7 +233,7 @@ test('passerelle : OAuth Google, jetons chiffrés, actions Agenda/Gmail', async 
 });
 
 test('PWA : le précache couvre tout le graphe d’imports, les fichiers référencés existent, l’empreinte CSP correspond', () => {
-  const files = readdirSync('.').filter(f => f.endsWith('.js') && !['sw.js', 'worker.js'].includes(f)), sw = readFileSync('sw.js', 'utf8'), shell = JSON.parse(sw.match(/const SHELL = (\[.*?\]);/s)[1]);
+  const files = readdirSync('.').filter(f => f.endsWith('.js') && !['sw.js', 'worker.js', 'sopp-gate.js'].includes(f)), sw = readFileSync('sw.js', 'utf8'), shell = JSON.parse(sw.match(/const SHELL = (\[.*?\]);/s)[1]);
   for (const f of files) { const src = readFileSync(f, 'utf8'); for (const m of src.matchAll(/(?:from|import\()\s*['"]\.\/([\w.-]+\.js)['"]/g)) { assert.ok(existsSync(m[1]), `${f} importe ${m[1]} (absent)`); assert.ok(shell.includes(m[1]), `${m[1]} manque au précache du service worker`); } }
   for (const m of readFileSync('connectors.js', 'utf8').matchAll(/'\.\/([\w.-]+\.js)'/g)) assert.ok(shell.includes(m[1]), `connecteur ${m[1]} manque au précache`);
   for (const f of shell.filter(x => x !== './')) assert.ok(existsSync(f), `précache : ${f} absent`);
@@ -240,7 +241,9 @@ test('PWA : le précache couvre tout le graphe d’imports, les fichiers référ
   for (const f of files) if (f !== 'app.js') assert.ok(imported.has(f), `fichier orphelin (importé par personne) : ${f}`);
   assert.ok(files.every(f => shell.includes(f)), 'tout module .js doit être dans le précache');
   const man = JSON.parse(readFileSync('manifest.webmanifest', 'utf8')); for (const i of man.icons) assert.ok(existsSync(i.src), i.src); assert.equal(man.name, 'G.E.N.I.S'); assert.equal(man.display, 'standalone');
-  const html = readFileSync('index.html', 'utf8'); for (const m of html.matchAll(/(?:href|src)="([\w.-]+\.(?:css|js|svg|png|webmanifest))"/g)) assert.ok(existsSync(m[1]), `index.html référence ${m[1]}`);
+  assert.ok(shell.includes('sopp-gate.js'), 'le verrou SOPP Agents (script classique, non importé) doit être précaché');
+  const html = readFileSync('index.html', 'utf8'); assert.match(html, /<head>[\s\S]*?<script src="sopp-gate\.js"><\/script>/, 'sopp-gate.js est chargé dans <head>'); assert.equal(html.indexOf('<script src="sopp-gate.js">') < html.indexOf('<script type="module"'), true, 'le verrou précède l’application');
+  for (const m of html.matchAll(/(?:href|src)="([\w.-]+\.(?:css|js|svg|png|webmanifest))"/g)) assert.ok(existsSync(m[1]), `index.html référence ${m[1]}`);
   const inline = html.match(/<script>([\s\S]*?)<\/script>/)[1], hash = createHash('sha256').update(inline).digest('base64'); assert.ok(html.includes(`'sha256-${hash}'`), 'l’empreinte CSP du bouton SOPP Agents doit correspondre au script en ligne');
   assert.match(html, /<title>G\.E\.N\.I\.S<\/title>/); assert.ok(html.includes('sopp-home-float'), 'le raccourci SOPP Agents est conservé');
   for (const id of [...html.matchAll(/id="([\w-]+)"/g)].map(m => m[1])) assert.equal([...html.matchAll(new RegExp(`id="${id}"`, 'g'))].length, 1, `id dupliqué : ${id}`);

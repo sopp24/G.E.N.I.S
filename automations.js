@@ -59,11 +59,11 @@ export function startAutomations() {
       if (t.time !== hm || (t.type === 'time' && t.days?.length && !t.days.includes(now.getDay())) || (t.type === 'date' && t.date !== day)) continue;
       if (fired.size > 300) fired.clear();
       const key = `${r.id}|${day}|${hm}`; if (fired.has(key)) continue; fired.add(key);
-      runBackground(r).then(() => { if (t.type === 'date') toggleRule(r.id, false); });
+      runBackground(r).then(() => { if (t.type === 'date') toggleRule(r.id, false); }).catch(e => console.error('[G.E.N.I.S] automatisation', e));
     }
   });
 }
-export function emitEvent(name) { for (const r of listRules()) if (r.enabled && r.trigger.type === 'event' && r.trigger.event === name) runBackground(r); }
+export function emitEvent(name) { for (const r of listRules()) if (r.enabled && r.trigger.type === 'event' && r.trigger.event === name) runBackground(r).catch(e => console.error('[G.E.N.I.S] automatisation', e)); }
 export function describeTrigger(r) {
   const t = r.trigger;
   if (t.type === 'phrase') return `Quand je dis « ${t.phrases.join(' » ou « ')} »`;

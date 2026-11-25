@@ -22,7 +22,7 @@ export function calculate(input) {
     if (/^\d/.test(t)) return parseFloat(t);
     if (t === '(') { const v = expr(); need(')'); return v; }
     if (t === 'pi') return Math.PI; if (t === 'e') return Math.E;
-    if (FN[t]) { need('('); const a = [expr()]; while (eat(',')) a.push(expr()); need(')'); return FN[t](...a); }
+    if (Object.hasOwn(FN, t)) { need('('); const a = [expr()]; while (eat(',')) a.push(expr()); need(')'); return FN[t](...a); }
     throw new Error('Expression non comprise.');
   }
   const v = expr(); if (i < T.length || !Number.isFinite(v)) throw new Error('Expression non comprise.');

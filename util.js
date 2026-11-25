@@ -42,6 +42,7 @@ const PROPS = new Set(['value', 'checked', 'disabled', 'hidden', 'selected', 'op
 export function h(tag, props = {}, ...kids) {
   const el = document.createElement(tag);
   for (const [k, v] of Object.entries(props || {})) {
+    if (typeof v === 'boolean' && k.startsWith('aria-')) { el.setAttribute(k, String(v)); continue; } // aria-current/pressed/… attendent « true » ou « false », pas un attribut vide
     if (v == null || v === false) continue;
     if (k === 'class') el.className = v;
     else if (k === 'dataset') Object.assign(el.dataset, v);

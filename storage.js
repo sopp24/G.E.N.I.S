@@ -71,7 +71,11 @@ const IMPORTABLE = /^(settings|permissions|chats:index|chat:|memories|automation
 export function importAll(obj) {
   if (obj?.app !== 'G.E.N.I.S' || typeof obj.data !== 'object') throw new Error('Fichier de sauvegarde non reconnu.');
   let n = 0;
-  for (const [k, v] of Object.entries(obj.data)) if (IMPORTABLE.test(k)) { store.set(k, v); n++; }
+  for (const [k, v] of Object.entries(obj.data)) if (IMPORTABLE.test(k)) {
+    // Une sauvegarde ne doit pas rediriger la passerelle (et donc le secret d'application) : l'adresse déjà configurée sur cet appareil est conservée.
+    if (k === 'settings' && v && typeof v === 'object' && getSettings().gatewayUrl) store.set(k, { ...v, gatewayUrl: getSettings().gatewayUrl }); else store.set(k, v);
+    n++;
+  }
   return n;
 }
 export async function wipe() {

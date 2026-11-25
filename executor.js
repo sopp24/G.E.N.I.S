@@ -65,7 +65,7 @@ export async function execute(call, ctx = {}) {
     const ans = await hooks.permission({ permission: decision.permission, connector: connector.name, capability: cap.label, why: decision.reason });
     if (ans === 'deny') return finish({ status: 'denied', summary: 'Permission refusée.' }, decision.level);
     if (ans === 'always') setPerm(decision.permission, 'granted');
-    decision = evaluate(eff, args, { ...ev, permissionGranted: true });
+    decision = evaluate(eff, args, { ...ev, grantedOnce: decision.permission }); // « Cette fois » : la permission est accordée, mais la confirmation (niveau 3) ou l’authentification forte (niveau 4) restent exigées
   }
   if (decision.decision === 'deny') return finish({ status: 'denied', summary: decision.reason, error: { code: 'DENIED', message: decision.reason } }, decision.level);
   let authToken = null;

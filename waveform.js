@@ -25,8 +25,8 @@ export class Waveform {
     this.dpr = this.low ? 1 : Math.min(globalThis.devicePixelRatio || 1, 2); this.w = w; this.h = h;
     this.c.width = Math.round(w * this.dpr); this.c.height = Math.round(h * this.dpr); this.c.style.width = w + 'px'; this.c.style.height = h + 'px';
   }
-  start() { if (this.running) return; this.running = true; this.last = performance.now(); requestAnimationFrame(this.loop); }
-  stop() { this.running = false; }
+  start() { if (this.running) return; this.running = true; this.last = performance.now(); cancelAnimationFrame(this.raf); this.raf = requestAnimationFrame(this.loop); }
+  stop() { this.running = false; cancelAnimationFrame(this.raf); }
   bands() {
     const s = this.spec, avg = (a, b) => { let t = 0; for (let i = a; i < b; i++) t += s[i]; return t / ((b - a) * 255); };
     this.bass = avg(0, 6); this.hi = avg(24, 64); this.level = this.bass * 0.5 + avg(6, 24) * 0.35 + this.hi * 0.15;
@@ -80,6 +80,6 @@ export class Waveform {
     this.step(dt); this.draw();
     this.acc += dt; this.frames++;
     if (this.frames === 90) { if (this.acc / 90 > 0.026 && !this.low) { this.low = true; this.resize(); } this.frames = 0; this.acc = 0; }
-    requestAnimationFrame(this.loop);
+    this.raf = requestAnimationFrame(this.loop);
   }
 }

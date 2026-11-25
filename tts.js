@@ -67,13 +67,13 @@ const chunks = (t, max = 900) => { const out = []; let cur = ''; for (const s of
 async function speakGateway(text, style, sig, s) {
   const ctx = audioContext(); if (!ctx) throw new Error('Pas de contexte audio.'); if (ctx.state === 'suspended') await ctx.resume();
   const fetchBuf = async c => { const ab = await gateway.tts({ text: c, style, signal: sig }); return new Promise((res, rej) => ctx.decodeAudioData(ab, res, rej)); };
-  const parts = chunks(text); let next = fetchBuf(parts[0]);
+  const parts = chunks(text), prefetch = c => { const p = fetchBuf(c); p.catch(() => {}); return p; }; let next = prefetch(parts[0]); // .catch : un arrêt de la voix ne doit pas laisser de rejet non géré
   for (let i = 0; i < parts.length; i++) {
-    const buf = await next; if (sig.aborted) return; if (i + 1 < parts.length) next = fetchBuf(parts[i + 1]);
+    const buf = await next; if (sig.aborted) return; if (i + 1 < parts.length) next = prefetch(parts[i + 1]);
     await new Promise(res => {
       const src = ctx.createBufferSource(), gain = ctx.createGain(), an = makeAnalyser(256); src.buffer = buf; src.playbackRate.value = clamp(s.speechRate, 0.7, 1.4); gain.gain.value = s.volume;
       src.connect(gain).connect(an).connect(ctx.destination); playing = { an, buf: new Uint8Array(an.frequencyBinCount) };
-      src.onended = () => { playing = null; res(); }; sig.addEventListener('abort', () => { try { src.stop(); } catch {} }, { once: true }); src.start();
+      src.onended = () => { playing = null; try { src.disconnect(); an.disconnect(); } catch {} res(); }; sig.addEventListener('abort', () => { try { src.stop(); } catch {} }, { once: true }); src.start();
     });
   }
 }
@@ -86,10 +86,10 @@ export const tts = {
   fillSpectrum(out) { if (playing) { playing.an.getByteFrequencyData(playing.buf); for (let i = 0; i < 64; i++) out[i] = playing.buf[i]; } else synthFill(out); },
   async speak(text, { style = 'info' } = {}) {
     const s = getSettings(), clean = cleanForSpeech(text); if (!clean) return;
-    this.stop(); ctrl = new AbortController(); const sig = ctrl.signal; speaking = true; bus.emit('visual', { state: 'speaking' });
+    this.stop(); const mine = ctrl = new AbortController(), sig = mine.signal; speaking = true; bus.emit('visual', { state: 'speaking' });
     try {
       if (pickEngine(s) === 'gateway') { try { await speakGateway(clean, style, sig, s); } catch (e) { if (sig.aborted) return; gatewayOk = false; bus.emit('toast', { message: 'Voix de la passerelle indisponible : voix du navigateur utilisée.', kind: 'warn' }); await speakBrowser(clean, style, sig, s); } }
       else await speakBrowser(clean, style, sig, s);
-    } finally { speaking = false; talk = false; bus.emit('speech:end'); }
+    } finally { if (ctrl === mine) { speaking = false; talk = false; bus.emit('speech:end'); } }
   }
 };

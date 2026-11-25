@@ -30,7 +30,7 @@ export function confirmAction(v) {
     m = modal(() => h('div', { class: 'modal-body' }, h('p', { class: 'modal-sub' }, `${v.connector} · ${LEVELS[v.level]}`), h('h2', {}, v.title), h('p', { class: 'lead' }, v.summary), warns(v.warnings),
       v.details?.length ? h('dl', { class: 'kv' }, v.details.flatMap(d => [h('dt', {}, d.label), h('dd', {}, d.value)])) : null, h('p', { class: 'why' }, v.why),
       getSettings().voiceConfirm && v.level < 4 ? h('p', { class: 'why' }, 'Vous pouvez aussi dire « oui » ou « non ».') : null,
-      actions(btn('Annuler', () => done('deny'), 'ghost'), v.offerAlways ? btn('Toujours autoriser', () => done('always')) : null, h('button', { type: 'button', class: 'btn primary', autofocus: true, onclick: () => done('allow') }, 'Autoriser'))), { label: v.title, onClose: () => resolve('deny') });
+      actions(btn('Annuler', () => done('deny'), 'ghost'), v.offerAlways ? btn('Toujours autoriser', () => done('always')) : null, h('button', { type: 'button', class: 'btn primary', autofocus: true, onclick: () => done('allow') }, 'Autoriser'))), { label: v.title, onClose: () => { pendingVoice = null; resolve('deny'); } });
     pendingVoice = { level: v.level, done }; bus.emit('visual', { state: 'confirm' }); bus.emit('confirm:ask', v);
   });
 }
