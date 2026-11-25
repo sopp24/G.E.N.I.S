@@ -19,7 +19,7 @@ Le dépôt est **plat** (aucun dossier) pour pouvoir être envoyé depuis le sit
 1. Décompressez l'archive, puis sur `github.com/sopp24/G.E.N.I.S` : **Add file › Upload files** et glissez **tous les fichiers** (pas le dossier lui-même). Validez (*Commit changes*).
 2. **Settings › Pages › Build and deployment** : *Source* = **Deploy from a branch**, branche **main**, dossier **/ (root)**.
 3. Au bout d'une minute : `https://sopp24.github.io/G.E.N.I.S/`. Ouvrez-la ; installez-la (menu du navigateur › *Installer l'application*, ou sur iPhone/iPad *Partager › Sur l'écran d'accueil*).
-4. *Facultatif* : les vérifications automatiques. **Add file › Create new file**, tapez `.github/workflows/ci.yml` comme nom (les `/` créent les dossiers) et collez le contenu du fichier du même nom fourni dans l'archive. Les fichiers commençant par un point (`.gitignore`, `.dev.vars.example`) peuvent être masqués par votre système : créez-les de la même façon si besoin.
+4. *Facultatif* : les vérifications automatiques. Aucun workflow GitHub Actions n'est inclus dans ce dépôt plat (il exigerait un dossier `.github/workflows/`) ; `npm run verify` exécute les mêmes contrôles en local. Les fichiers commençant par un point (`.gitignore`, `.dev.vars.example`) peuvent être masqués par votre système : ils sont bien dans le dépôt.
 
 Sans rien d'autre, G.E.N.I.S fonctionne déjà : minuteurs, rappels, réveils, calculs, météo, itinéraires, Wikipédia, mémoire, historique, automatisations, espaces de travail, lecture de pièces jointes. Les demandes complexes (« organise mon week-end à Lyon ») demandent une IA : étape suivante.
 
@@ -77,14 +77,22 @@ Il n'y a **pas d'étape de build** : ce que vous voyez dans le dépôt est exact
 | Interface | `index.html`, `styles.css`, `ui.js`, `panels.js`, `cards.js`, `modals.js`, `waveform.js`, `app.js` |
 | Voix | `voice.js` (écoute), `tts.js` (voix : prosodie + moteurs interchangeables), `audio.js` |
 | Cerveau | `brain.js` (orchestrateur), `nlu-local.js` (compréhension hors ligne), `agents.js`, `datetime-fr.js` |
-| Sécurité | `permissions.js`, `security.js` (niveaux 1–4), `executor.js`, `strong-auth.js`, `vault.js` |
+| Sécurité | `permissions.js`, `security.js` (niveaux 1–4), `executor.js`, `strong-auth.js`, `vault.js`, `sopp-gate.js` (verrou d'accès SOPP Agents) |
 | Données | `storage.js`, `memory.js`, `spaces.js`, `legacy.js` |
 | Automatisation | `automations.js`, `scheduler.js`, `notifications.js` |
 | Connecteurs | `connectors.js` (registre), `connector-*.js` (un par service), `connectors-prepared.js`, `services.js`, `geo.js`, `files.js`, `gateway.js` |
 | Passerelle | `worker.js`, `wrangler.toml`, `.dev.vars.example` |
 | PWA | `manifest.webmanifest`, `sw.js`, `favicon.svg`, `genis-*.png`, `apple-touch-icon.png` |
-| Qualité | `test.mjs`, `smoke.mjs`, `check.mjs`, `package.json`, `.github/workflows/ci.yml` |
+| Qualité | `test.mjs`, `smoke.mjs`, `check.mjs`, `package.json` |
 | Docs | `README.md`, `ARCHITECTURE.md`, `SECURITY.md`, `INTEGRATIONS.md`, `FEATURES.md` |
+
+## Verrouillage d'accès
+
+Cette application est conçue pour être ouverte **depuis SOPP Agents** (<https://sopp24.github.io/SOPP-agents/>), qui se déverrouille par Face ID / Touch ID puis ouvre l'application avec un jeton dans le fragment d'URL. Un accès direct affiche un écran de verrouillage (« Ouvrir SOPP Agents ») ; le verrou est assuré par `sopp-gate.js`, chargé en premier dans `index.html`. Il est ignoré sur `localhost`, `127.0.0.1` et `file:` pour le développement et les tests (`?soppgate=force` force son activation). Le paramètre `?from=sopp-agents` et le bouton de retour vers SOPP Agents ne sont pas modifiés.
+
+Limite à connaître : un dépôt statique public ne peut pas cacher son code. Ce verrou empêche l'usage normal en dehors de SOPP Agents, pas la lecture des fichiers ; une vraie protection demande un dépôt privé servi derrière le Worker authentifié (voir `SOPP-agents/cloudflare-auth`).
+
+Licence : tous droits réservés (voir `LICENSE`).
 
 ## Limites connues (dites sans détour)
 

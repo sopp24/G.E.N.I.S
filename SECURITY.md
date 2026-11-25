@@ -47,6 +47,10 @@ IndexedDB sur l'appareil. Les secrets saisis (secret de la passerelle) sont chif
 
 Toutes les routes exigent `x-app-secret` (comparaison à temps constant) ; CORS limité à `ALLOWED_ORIGIN` ; corps limités en taille ; routes de proxy en **liste blanche** (hôtes fixes, chemins validés, paramètres filtrés : aucun SSRF) ; état OAuth à usage unique (10 min) ; jetons chiffrés ; en-têtes d'e-mail assainis (pas d'injection) ; erreurs sans détails internes ; une limitation de débit « au mieux » est incluse, **ajoutez une règle de débit Cloudflare** (Security › WAF › Rate limiting) pour une protection réelle.
 
+## Verrouillage d'accès (SOPP Agents)
+
+`sopp-gate.js` (chargé en premier dans `index.html`, précaché par `sw.js`) masque l'interface tant que l'application n'est pas ouverte depuis SOPP Agents avec un jeton valide (fragment d'URL, retiré de l'adresse avant le démarrage ; accès renouvelé à l'usage, expiré après 30 minutes d'inactivité). Il ne remplace pas les protections ci-dessus : un dépôt statique public ne peut pas cacher son code, seule une distribution derrière un serveur authentifié (dépôt privé + Worker) empêche la lecture. Il est ignoré sur `localhost`, `127.0.0.1` et `file:`.
+
 ## Recommandations
 
 1. **Isolez G.E.N.I.S sur sa propre origine.** Toutes les pages sous `https://sopp24.github.io/…` partagent le même stockage navigateur et peuvent se lire entre elles. Idéal : un domaine ou sous-domaine dédié (GitHub Pages › Custom domain) ou une organisation GitHub séparée. Mettez alors `ALLOWED_ORIGIN` à jour.
