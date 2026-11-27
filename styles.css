@@ -109,3 +109,46 @@ input[type=range]{width:160px;accent-color:var(--accent)}.acc{border-bottom:1px 
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}}
 [data-motion=reduced] *,[data-motion=reduced] *::before,[data-motion=reduced] *::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
 @media (prefers-contrast:more){:root{--line:rgba(255,255,255,.3);--line2:rgba(255,255,255,.5);--mist:#d3dadd;--dim:#aab3b8}}
+
+/* G.E.N.I.S — ergonomie desktop et tactile, DA graphite préservée */
+:root{--mist:#bac5cb;--dim:#91a0a8;--line:rgba(255,255,255,.13);--line2:rgba(255,255,255,.24)}
+.btn,.icon-btn,.chip-btn,.dock-item,.send-btn{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.btn{min-height:44px;padding-inline:16px;font-size:.9rem}
+.icon-btn{min-width:42px;min-height:42px}
+#prompt{font-size:16px}
+#prompt::placeholder{color:#91a0a8}
+.dock{gap:6px;padding:9px 12px}
+.dock-item{width:52px;height:52px}
+.drawer,.overview,.modal{overscroll-behavior:contain}
+.drawer-body,.overview-grid,.log{scrollbar-gutter:stable}
+@media(min-width:1100px){
+  .app{max-width:1920px;margin-inline:auto}
+  .topbar{padding-inline:clamp(22px,3vw,48px)}
+  .stage,.thread{min-width:0}
+  .drawer{width:min(500px,38vw)}
+}
+@media(max-width:899px){
+  .thread{padding-bottom:env(safe-area-inset-bottom)}
+  .composer{padding-bottom:max(8px,env(safe-area-inset-bottom))}
+  .drawer{bottom:calc(var(--dock-h) + env(safe-area-inset-bottom))}
+  .overview{bottom:calc(var(--dock-h) + env(safe-area-inset-bottom))}
+  .modal-back{padding-bottom:env(safe-area-inset-bottom)}
+}
+@media(max-width:700px){
+  .topbar{gap:8px;padding:9px 12px}
+  .tabs{gap:5px;overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{flex:0 0 auto;min-height:42px;padding:9px 12px}
+  .dock{width:calc(100% - 20px);max-width:620px;justify-content:space-around;gap:3px;margin-bottom:max(8px,env(safe-area-inset-bottom))}
+  .dock-item{width:48px;height:48px;flex:0 0 48px}
+  .drawer,.overview{max-height:calc(90dvh - var(--dock-h))}
+  .row{gap:10px;padding:10px 0}
+  .row>input,.row>select{min-height:44px;font-size:16px}
+  .composer-row{border-radius:18px}
+}
+@media(max-width:420px){
+  .dock{padding-inline:6px}
+  .dock-item{width:44px;height:46px;flex-basis:44px}
+  .hero-text{max-width:100%}
+  .log{padding-inline:12px}
+}
