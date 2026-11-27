@@ -162,3 +162,12 @@ input[type=range]{width:160px;accent-color:var(--accent)}.acc{border-bottom:1px 
 @media(max-width:899px){
   .drawer,.overview{bottom:var(--dock-h)}
 }
+
+
+/* G.E.N.I.S — champs iOS : éviter le zoom automatique et garder une zone de saisie confortable */
+@media(max-width:899px){
+  input[type=text],input[type=url],input[type=password],input[type=search],input[type=time],input[type=date],input[type=number],select,textarea{
+    min-height:44px;
+    font-size:16px!important;
+  }
+}
